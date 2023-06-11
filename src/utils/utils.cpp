@@ -4,7 +4,6 @@
 
 #include "utils.h"
 
-// TODO: check
 bool is_number(const std::string &s)
 {
     return !s.empty() && std::find_if(s.begin(),

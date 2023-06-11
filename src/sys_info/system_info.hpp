@@ -3,13 +3,20 @@
 #include <string>
 #include <vector>
 
-#include "load_average_stats.hpp"
 #include "cpu_load.hpp"
+#include "disks_stats.hpp"
+#include "load_average_stats.hpp"
+#include "memory_stats.hpp"
 
 /** @brief Struct holds system monitoring information */
 struct SystemInfo
 {
+   /** @brief Represents load average stats */
    LoadAverageStats load_average_stats;
-   // TODO: add descr
+   /** @brief A collection of CPU cores load */
    std::vector<CpuLoad> cpu_load_collection;
+   /** @brief Represents system RAM stats */
+   MemoryStats memory_stats;
+   // TODO: add descr
+   DisksStats disks_stats;
 };

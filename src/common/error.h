@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 /** @brief Prints error when unable to collect info from source.
  * @param info_source_name information source name
  */

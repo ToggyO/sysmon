@@ -40,12 +40,12 @@ void CpuReaderLinux::m_read_cpu_data(std::vector<CpuStats> &stats_collection)
 {
     CpuStats cpu_stats{};
 
-    std::string source_name = "/proc/stat";
-    std::ifstream proc_stat(source_name);
+    std::ifstream proc_stat(m_source_name);
     if (!proc_stat.is_open())
     {
-        print_collection_error(source_name);
-        throw std::runtime_error("Cannot open: " + source_name);
+        print_collection_error(m_source_name);
+        // TODO: duplicate
+        throw std::runtime_error("Cannot open: " + m_source_name);
     }
 
     std::string line;

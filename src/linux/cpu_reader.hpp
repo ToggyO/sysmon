@@ -10,14 +10,21 @@
 #include "../sys_info/cpu_stats.hpp"
 #include "../common/error.h"
 
+/** @brief Path to file, that keeps track of a variety of different statistics about the system since it was last restarted */
+const static std::string m_source_name = "/proc/stat";
+/** @brief Allows you to determine the presence of information about the loading of cpu cores when reading from the file /proc/stat */
 const static std::string m_cpu_prefix = "cpu";
 
-// TODO: add descr
+/** @brief Represents functionality to read and handle CPU load */
 class CpuReaderLinux
 {
     public:
+        /** @brief Creates new instance of @ {@link CpuReaderLinux} */
         explicit CpuReaderLinux(size_t);
 
+        /** @brief Reads content of '/proc/stat' file, handle results and fill provided vector by CPU load info per core.
+         * @param Vector of @see {@link CpuLoad}
+        */
         void read(std::vector<CpuLoad> &);
 
     private:

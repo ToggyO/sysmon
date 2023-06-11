@@ -12,7 +12,7 @@ set(COMMON_SOURCES
 
 # detect system type
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(METER_SOURCES "common/load_average.cpp" "linux/cpu.cpp")
+    set(METER_SOURCES "common/load_average.cpp" "linux/cpu.cpp" "linux/cpu_reader.hpp" "linux/cpu_reader.cpp" "linux/memory.cpp" "linux/disks.cpp") 
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(METER_SOURCES)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
