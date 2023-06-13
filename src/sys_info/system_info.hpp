@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "cpu_load.hpp"
-#include "disks_stats.hpp"
+#include "disk_stats.hpp"
 #include "load_average_stats.hpp"
 #include "memory_stats.hpp"
 
@@ -18,5 +18,5 @@ struct SystemInfo
    /** @brief Represents system RAM stats */
    MemoryStats memory_stats;
    // TODO: add descr
-   DisksStats disks_stats;
+   std::vector<DiskStats> disk_stats;
 };
