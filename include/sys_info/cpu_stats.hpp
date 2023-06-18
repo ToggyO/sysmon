@@ -32,13 +32,10 @@ struct CpuStats
     /** @brief Calculates individual CPU total active time
      * @return total active time
     */
-    size_t get_total_active() const
-    {
-        return user + nice + system + irq + softirq + steal + guest + guest_nice;
-    }
+    size_t get_total_active() const;
 
     /** @brief Calculates individual CPU total idle time
      * @return total idle time
     */
-    size_t get_total_idle() const { return idle + iowait; }
+    size_t get_total_idle() const;
 };

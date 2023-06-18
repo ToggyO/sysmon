@@ -1,12 +1,13 @@
 #pragma once
 
-#include "../sys_info/system_info.hpp"
+#include "../../include/sys_info/system_info.hpp"
+#include "stats_reader.hpp"
 
 /** @brief System monitoring information collector */
 class SystemMonitor
 {
     public:
-        /** @brief Collects system information and populates @see {@link SystemInfo} with it..
+        /** @brief Collects system information and populates SystemInfo with it..
          * @param system_info - struct holds system monitoring information.
          */
         void collect(SystemInfo &system_info)
@@ -16,26 +17,33 @@ class SystemMonitor
             collect_cpu(system_info);
             collect_memory(system_info);
             collect_disks_usage(system_info);
+            collect_processes_info(system_info);
         }
 
     private:
-        /** @brief Collects information about system load average and populates @see {@link SystemInfo} with it.
+        void collect_os_name(SystemInfo &);
+        /** @brief Collects information about system load average and populates SystemInfo with it.
          * @param system_info - struct holds system monitoring information.
          */
-        void collect_load(SystemInfo &system_info);
+        void collect_load(SystemInfo &);
 
-        /** @brief Collects information about CPU usage @see {@link SystemInfo} with it.
+        /** @brief Collects information about CPU usage SystemInfo with it.
          * @param system_info - struct holds system monitoring information.
          */
-        void collect_cpu(SystemInfo &system_info);
+        void collect_cpu(SystemInfo &);
 
-        /** @brief Collects information about memory usage @see {@link SystemInfo} with it.
+        /** @brief Collects information about memory usage SystemInfo with it.
          * @param system_info - struct holds system monitoring information.
          */
-        void collect_memory(SystemInfo &system_info);
+        void collect_memory(SystemInfo &);
 
-        /** @brief Collects information about disks usage @see {@link SystemInfo} with it.
+        /** @brief Collects information about disks usage SystemInfo with it.
          * @param system_info - struct holds system monitoring information.
          */
-        void collect_disks_usage(SystemInfo &system_info);
+        void collect_disks_usage(SystemInfo &);
+
+        /** @brief Collects information about system processes SystemInfo with it.
+         * @param system_info - struct holds system monitoring information.
+         */
+        void collect_processes_info(SystemInfo &);
 };

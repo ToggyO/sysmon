@@ -1,34 +1,42 @@
-#include "cpu_reader.hpp"
+#include "cpu_reader_linux.hpp"
 
-CpuReaderLinux::CpuReaderLinux(size_t cpu_usage_delay) : m_cpu_usage_delay{cpu_usage_delay}
-{}
+CpuReaderLinux::CpuReaderLinux(size_t cpu_usage_delay)
+    : m_cpu_usage_delay{cpu_usage_delay},
+    m_cpus_count{std::thread::hardware_concurrency()},
+    m_first_measurement{},
+    m_second_measurement{}
+{
+    m_first_measurement.reserve(m_cpus_count);
+    m_second_measurement.reserve(m_cpus_count);
+}
 
 void CpuReaderLinux::read(std::vector<CpuLoad> &cpu_loads_collection)
 {
-    auto cpus_count = std::thread::hardware_concurrency();
+    m_first_measurement.clear();
+    m_second_measurement.clear();
+    // auto cpus_count = std::thread::hardware_concurrency();
 
-    auto first_measurement = std::vector<CpuStats>();
-    first_measurement.reserve(cpus_count);
-    auto second_measurement = std::vector<CpuStats>();
-    second_measurement.reserve(cpus_count);
+    // auto first_measurement = std::vector<CpuStats>();
+    // first_measurement.reserve(m_cpus_count);
+    // auto second_measurement = std::vector<CpuStats>();
+    // second_measurement.reserve(m_cpus_count);
 
-    m_read_cpu_data(first_measurement);
+    m_read_cpu_data(m_first_measurement);
 
     std::this_thread::sleep_for(std::chrono::microseconds(m_cpu_usage_delay));
 
-    m_read_cpu_data(second_measurement);
+    m_read_cpu_data(m_second_measurement);
 
-    m_calculate_cpu_load(first_measurement, second_measurement, cpu_loads_collection, cpus_count);
+    m_calculate_cpu_load(m_first_measurement, m_second_measurement, cpu_loads_collection, m_cpus_count);
 }
 
-CpuStats CpuReaderLinux::m_create_stats(const std::string &line)
+CpuStats CpuReaderLinux::m_create_stats(std::istringstream &iss)
 {
     CpuStats cpu_stats{};
-    std::stringstream ss(line);
-    ss >> cpu_stats.cpu_id;
+    iss >> cpu_stats.cpu_id;
 
     auto *stats_p = (size_t*)&cpu_stats;
-    while (ss >> *stats_p)
+    while (iss >> *stats_p)
     {
         stats_p++;
     }
@@ -40,25 +48,24 @@ void CpuReaderLinux::m_read_cpu_data(std::vector<CpuStats> &stats_collection)
 {
     CpuStats cpu_stats{};
 
-    std::ifstream proc_stat(m_source_name);
-    if (!proc_stat.is_open())
-    {
-        print_collection_error(m_source_name);
-        // TODO: duplicate
-        throw std::runtime_error("Cannot open: " + m_source_name);
-    }
+    std::fstream proc_stat(m_source_name);
+    check_fs_is_open_or_throw(proc_stat, m_source_name);
 
     std::string line;
+    std::istringstream ss;
     getline(proc_stat, line); // skip first line with cpu summary
 
     while (getline(proc_stat, line))
     {
+        ss.clear();
+        ss.str(line); // TODO: check
+//        ss.seekg(0, std::ios::beg); // TODO: check ss
         auto k = line.rfind(m_cpu_prefix, 0);
         if (k != 0)
         {
             break;
         }
-        stats_collection.push_back(std::move(m_create_stats(line)));
+        stats_collection.push_back(std::move(m_create_stats(ss)));
     }
 }
 
