@@ -13,6 +13,7 @@ class SystemMonitor
         void collect(SystemInfo &system_info)
         {
             // TODO: распараллелить запись
+            collect_os_name(system_info);
             collect_load(system_info);
             collect_cpu(system_info);
             collect_memory(system_info);

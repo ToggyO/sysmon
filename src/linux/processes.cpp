@@ -2,11 +2,11 @@
 #include <filesystem>
 
 #include "../common/system_monitor.hpp"
+#include "linux_constants.hpp" // k_proc_directory
 
 void collect_processes(std::vector<Process> &processes)
 {
-    // TODO: ВЫДЕЛИТЬ ЛИНУКС КОНСТАНТЫ
-    for (const auto &dir_entry : std::filesystem::directory_iterator("/proc"))
+    for (const auto &dir_entry : std::filesystem::directory_iterator(k_proc_directory))
     {
         if (!dir_entry.is_directory()) { continue; }
 

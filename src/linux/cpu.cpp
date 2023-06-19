@@ -6,8 +6,10 @@
 
 void SystemMonitor::collect_cpu(SystemInfo &system_info)
 {
+    // TODO: рассмотреть возможность убрать delay
     // TODO: инициализировать только раз
-    auto reader = CpuReaderLinux(990000); // TODO: в опции
+//    auto reader = CpuReaderLinux(990000); // TODO: в опции
+    auto reader = CpuReaderLinux(std::chrono::milliseconds(800)); // TODO: в опции
 
     std::vector<CpuLoad> cpu_loads_collection;
     reader.read(cpu_loads_collection);

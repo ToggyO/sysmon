@@ -6,13 +6,7 @@
 #include "../common/error.h" // check_fs_is_open_or_throw
 #include "../common/system_monitor.hpp"
 
-const static std::string k_source_name = "/proc/meminfo";
-const static std::string k_mem_total = "MemTotal";
-const static std::string k_mem_free = "MemFree";
-const static std::string k_shmem = "Shmem";
-const static std::string k_buffers = "Buffers";
-const static std::string k_cached = "Cached";
-const static std::string k_sreclaimable = "SReclaimable";
+#include "linux_constants.hpp" // k_source_name, k_mem_total, k_mem_free, k_shmem, k_buffers, k_cached, k_sreclaimable
 
 unsigned int substr_and_stoi(const std::string &value, const size_t value_start, const size_t value_end)
 {
@@ -21,7 +15,7 @@ unsigned int substr_and_stoi(const std::string &value, const size_t value_start,
 
 void SystemMonitor::collect_memory(SystemInfo &system_info)
 {
-    std::fstream proc_meminfo(k_source_name);
+    std::ifstream proc_meminfo(k_source_name);
     check_fs_is_open_or_throw(proc_meminfo, k_source_name);
 
     std::string line;
@@ -36,12 +30,11 @@ void SystemMonitor::collect_memory(SystemInfo &system_info)
 
     while (getline(proc_meminfo, line))
     {
-//        tokenizer = std::istringstream{line}; TODO: check
         tokenizer.clear();
         tokenizer.str(line);
 
         std::getline(tokenizer, key, k_colon_delimeter);
-        std::getline(tokenizer, value, k_colon_delimeter);
+        std::getline(tokenizer, value);
 
         value_start = value.find_first_not_of(' ');
         value_end = value.find_first_of('k');

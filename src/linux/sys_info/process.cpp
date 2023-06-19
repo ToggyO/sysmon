@@ -7,32 +7,39 @@
 #include "../common_data_reader/common_data_reader_linux.hpp"
 #include "../../common/constants.hpp" // k_colon_delimeter
 
-const static std::string k_proc_directory = "/proc";
-const static std::string k_proc_status_filename = "/status";
-const static std::string k_proc_stat_filename = "/stat";
-const static std::string k_cmdline_filename = "/cmdline";
-const static std::string k_pwd_path = "/etc/passwd";
-const static std::string k_uid_key = "Uid";
-const static std::string k_vm_size_key = "VmSize";
-const static ushort k_utime_index = 13;
-const static ushort k_stime_index = 14;
-const static ushort k_cutime_index = 15;
-const static ushort k_cstime_index = 16;
-const static ushort k_proc_stat_start_time_index = 21;
+#include "../linux_constants.hpp" // k_proc_directory, k_proc_stat_filename, k_utime_index, k_stime_index, k_cutime_index, k_cstime_index, k_cmdline_filename, k_pwd_path, k_proc_status_filename, k_proc_stat_start_time_index, k_vm_size_key, k_uid_key
+
+void create_path_from_segments(
+    std::filesystem::path &result,
+    const std::string &segment1,
+    const std::string &segment2,
+    const std::string &segment3)
+{
+    result += segment1;
+    result += std::filesystem::path::preferred_separator;
+    result += segment2;
+    result += std::filesystem::path::preferred_separator;
+    result += segment3;
+}
+
+Process::Process(size_t process_id) : pid{process_id}
+{
+    calculate_process_uptime();
+    calculate_cpu_utilization();
+    calculate_command();
+    calculate_memory_usage();
+    calculate_process_owner();
+}
 
 // TODO: оптимизировать обращение к /proc/<pid>/stat
 // 3 раза обращаюсь к файлу при формировании сущности Process
-void Process::set_cpu_utilization(size_t process_id)
+void Process::calculate_cpu_utilization()
 {
-    if (is_cpu_utilization_set) { return; }
+    std::filesystem::path proc_cpu_file_path;
+    create_path_from_segments(proc_cpu_file_path, k_proc_directory, std::to_string(pid), k_proc_stat_filename);
 
-    // TODO: duplicate
-    std::ostringstream oss;
-    oss << k_proc_directory << pid << k_cmdline_filename;
-    const auto source = oss.str();
-
-    std::fstream stats_fs(source);
-    check_fs_is_open_or_throw(stats_fs, source);
+    std::ifstream stats_fs(proc_cpu_file_path);
+    check_fs_is_open_or_throw(stats_fs, proc_cpu_file_path);
 
     double raw_cpu_usage = 0;
     std::string line;
@@ -57,69 +64,30 @@ void Process::set_cpu_utilization(size_t process_id)
         }
 
         const double current_runtime = raw_cpu_usage / (double)sysconf(_SC_CLK_TCK);
-        if (this->is_uptime_set)
-        {
-            set_process_uptime(process_id);
-        }
         this->cpu_usage = current_runtime / (double)this->uptime;
-        is_cpu_utilization_set = true;
     }
 }
 
-void Process::set_command(const size_t process_id)
+void Process::calculate_command()
 {
-    if (is_command_set) { return; }
+    std::filesystem::path proc_cpu_file_path;
+    create_path_from_segments(proc_cpu_file_path, k_proc_directory, std::to_string(pid), k_cmdline_filename);
 
-    // TODO: duplicate
-    std::ostringstream oss;
-    oss << k_proc_directory << pid << k_cmdline_filename;
-    const auto source = oss.str();
-
-    std::fstream cmdline_fs(source);
-    check_fs_is_open_or_throw(cmdline_fs, source);
+    std::ifstream cmdline_fs(proc_cpu_file_path);
+    check_fs_is_open_or_throw(cmdline_fs, proc_cpu_file_path);
 
     std::getline(cmdline_fs, this->command);
-    is_command_set = true;
 }
 
-void Process::set_uid(const size_t process_id, std::string &uid)
+void Process::calculate_process_owner()
 {
-    // TODO: duplicate
-    std::ostringstream oss;
-    oss << k_proc_directory << process_id << k_proc_status_filename;
-    const auto source = oss.str();
-
-    std::fstream status_fs(source);
-    check_fs_is_open_or_throw(status_fs, source);
-
-    std::string line;
-    std::string key;
-    std::istringstream tokenizer;
-
-    while (std::getline(status_fs, line))
-    {
-        tokenizer.clear();
-        tokenizer.str(line);
-
-        std::getline(tokenizer, key, k_colon_delimeter);
-        if (key != k_uid_key) { continue; }
-
-        std::getline(tokenizer, uid, k_colon_delimeter);
-        break;
-    }
-}
-
-void Process::set_process_owner(const size_t process_id)
-{
-    if (is_user_set) { return; }
-
-    std::fstream passwd_fs(k_pwd_path);
+    std::ifstream passwd_fs(k_pwd_path);
     check_fs_is_open_or_throw(passwd_fs, k_pwd_path);
 
     std::string line;
     std::istringstream iss;
     std::string uid;
-    set_uid(process_id, uid);
+    set_uid(pid, uid);
 
     while (std::getline(passwd_fs, line))
     {
@@ -129,20 +97,16 @@ void Process::set_process_owner(const size_t process_id)
         iss.clear();
         iss.str(line);
         iss >> this->user;
-        is_user_set = true;
     }
 }
 
-void Process::set_process_uptime(const size_t process_id)
+void Process::calculate_process_uptime()
 {
-    if (is_uptime_set) { return; }
+    std::filesystem::path proc_cpu_file_path;
+    create_path_from_segments(proc_cpu_file_path, k_proc_directory, std::to_string(pid), k_proc_stat_filename);
 
-    std::ostringstream oss;
-    oss << k_proc_directory << process_id << k_proc_stat_filename;
-    const auto source = oss.str();
-
-    std::fstream stats_fs(source);
-    check_fs_is_open_or_throw(stats_fs, source);
+    std::ifstream stats_fs(proc_cpu_file_path);
+    check_fs_is_open_or_throw(stats_fs, proc_cpu_file_path);
 
     std::string line;
     std::string temp_value;
@@ -156,21 +120,16 @@ void Process::set_process_uptime(const size_t process_id)
 
         size_t start_time = std::stol(temp_value) / sysconf(_SC_CLK_TCK);
         this->uptime = CommonDataReaderLinux::get_system_uptime() - start_time;
-        is_uptime_set = true;
     }
 }
 
-void Process::set_memory_usage(const size_t process_id)
+void Process::calculate_memory_usage()
 {
-    if (is_memory_usage_set) { return; }
+    std::filesystem::path proc_cpu_file_path;
+    create_path_from_segments(proc_cpu_file_path, k_proc_directory, std::to_string(pid), k_proc_status_filename);
 
-    // TODO: duplicate
-    std::ostringstream oss;
-    oss << k_proc_directory << process_id << k_proc_status_filename;
-    const auto source = oss.str();
-
-    std::fstream status_fs(source);
-    check_fs_is_open_or_throw(status_fs, source);
+    std::ifstream status_fs(proc_cpu_file_path);
+    check_fs_is_open_or_throw(status_fs, proc_cpu_file_path);
 
     std::string line;
     std::string key;
@@ -185,9 +144,35 @@ void Process::set_memory_usage(const size_t process_id)
         std::getline(tokenizer, key, k_colon_delimeter);
         if (key != k_vm_size_key) { continue; }
 
-        std::getline(tokenizer, value, k_colon_delimeter);
+        std::getline(tokenizer, value);
+        // TODO: raw value is like 'Key:\t   14431232 kB'. std::stod extract digits from it. But, it's too hard to rely on that
+        // Need to parse raw value manually
         this->memory_usage = std::stod(value);
-        is_memory_usage_set = true;
+        break;
+    }
+}
+
+void Process::set_uid(const size_t process_id, std::string &uid)
+{
+    std::filesystem::path proc_cpu_file_path;
+    create_path_from_segments(proc_cpu_file_path, k_proc_directory, std::to_string(process_id), k_proc_status_filename);
+
+    std::ifstream status_fs(proc_cpu_file_path);
+    check_fs_is_open_or_throw(status_fs, proc_cpu_file_path);
+
+    std::string line;
+    std::string key;
+    std::istringstream tokenizer;
+
+    while (std::getline(status_fs, line))
+    {
+        tokenizer.clear();
+        tokenizer.str(line);
+
+        std::getline(tokenizer, key, k_colon_delimeter);
+        if (key != k_uid_key) { continue; }
+
+        std::getline(tokenizer, uid);
         break;
     }
 }

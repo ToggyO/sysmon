@@ -8,8 +8,8 @@
  */
 void print_collection_error(const std::string& info_source_name);
 
-/** @brief Check if provided fstream was opened or throw exception if not
- * @param std::fstream reference to instance of fstream
- * @param std::string name of source for fstream
+/** @brief Check if provided ifstream was opened or throw exception if not
+ * @param std::ifstream reference to instance of ifstream
+ * @param std::string name of source for ifstream
  */
-void check_fs_is_open_or_throw(const std::fstream &, const std::string &);
+void check_fs_is_open_or_throw(const std::ifstream &, const std::string &);
