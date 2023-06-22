@@ -1,4 +1,4 @@
-#include "sys_info/cpu_stats.hpp"
+#include "cpu_stats.hpp"
 
 size_t CpuStats::get_total_active() const
 {

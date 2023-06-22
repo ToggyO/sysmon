@@ -7,37 +7,38 @@
 #include <vector>
 
 #include "../../../include/sys_info/cpu_load.hpp"
-#include "../../../include/sys_info/cpu_stats.hpp"
+#include "../sys_info/cpu_stats.hpp"
 #include "../../common/error.h" // check_fs_is_open_or_throw
-#include "../../common/stats_reader.hpp"
+#include "../filesystem/system_files_reader.hpp"
 
 /** @brief Represents functionality to read and handle CPU load */
-class CpuReaderLinux : public StatsReader<std::vector<CpuLoad>>
+class CpuReaderLinux
 {
     public:
-        /** @brief Creates new instance of @ {@link CpuReaderLinux}
-         * @param size_t the delay between cpu stats collection
-         */
-        explicit CpuReaderLinux(std::chrono::milliseconds);
+        /** @brief Creates new instance of CpuReaderLinux
+         * @param SystemFilesReader* Pointer to instance of SystemFilesReader
+        */
+        explicit CpuReaderLinux(SystemFilesReader *files_reader);
 
         /** @brief Reads content of '/proc/stat' file, handle results and fill provided vector by CPU load info per core.
+         * @static
          * @param Vector of @see CpuLoad
         */
-        void read(std::vector<CpuLoad> &) override;
+        void read(std::vector<CpuLoad> &);
 
     private:
-        static void m_set_stats(std::istringstream &, CpuStats &);
+        struct Jiffies
+        {
+            double active;
+            double idle;
+        };
 
-        static void m_read_cpu_data(std::vector<CpuStats> &);
+        void m_set_stats(std::istringstream &, CpuStats &);
 
-        static void m_calculate_cpu_load(
-            const std::vector<CpuStats> &,
-            const std::vector<CpuStats> &,
-            std::vector<CpuLoad> &,
-            size_t);
+        void m_read_cpu_data();
 
-        const std::chrono::milliseconds m_cpu_usage_delay;
         const unsigned m_cpus_count;
-        std::vector<CpuStats> m_first_measurement;
-        std::vector<CpuStats> m_second_measurement;
+        std::vector<CpuStats> m_measurements;
+        std::vector<Jiffies> m_prev_results;
+        SystemFilesReader *const m_files_reader;
 };

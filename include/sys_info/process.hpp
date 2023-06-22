@@ -27,38 +27,4 @@ class Process
 
         /** @brief Overrides '\<' operator for Process */
         bool operator<(const Process &) const;
-
-    private:
-        /** @brief Calculate process CPU usage by process identifier
-         * @param size_t Process identifier
-         */
-        void calculate_cpu_utilization();
-
-        /** @brief Set process start command
-        * @param size_t Process identifier
-        */
-        void calculate_command();
-
-        /** @brief Set process memory usage
-        * @param size_t Process identifier
-        */
-        void calculate_memory_usage();
-
-        /** @brief Set process owner name into provided string parameter
-        * @param size_t Process identifier
-        */
-        void calculate_process_owner();
-
-        /** @brief Set process up time
-        * @param size_t Process identifier
-        */
-        void calculate_process_uptime();
-
-        /** @brief Set process UID
-         * @static
-         * @see '/proc/[pid]/status' in https://man7.org/linux/man-pages/man5/proc.5.html
-         * @param size_t Process identifier
-         * @param std::string Reference to result variable
-         */
-        static void set_uid(size_t, std::string &);
 };

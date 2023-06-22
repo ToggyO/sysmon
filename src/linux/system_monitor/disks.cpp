@@ -4,8 +4,9 @@
 #include <fstream>
 #include <vector>
 
-#include "../common/error.h" // print_collection_error
-#include "../common/system_monitor.hpp"
+#include "../../common/error.h" // print_collection_error
+// #include "../common/system_monitor.hpp"
+#include "system_monitor.hpp"
 
 // TODO: check
 struct io_stats

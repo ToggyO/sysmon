@@ -2,11 +2,20 @@
 #include <iostream> // std::setprecision
 #include <thread>
 
-#include "../include/sys_info/system_info.hpp"
 #include "common/system_monitor.hpp"
 #include "./common/conversions.h" // convert_unit
 #include "utils/utils.h"
-#include "../libs/console/ncurses_printer.h"
+#include "system_monitor_factory.hpp"
+
+#if defined(_WIN32) || defined(_WIN64)
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+#endif
+
+#if defined(linux) || defined(__linux__) || defined(__linux)
+#include "linux/system_monitor/system_monitor.hpp"
+#endif
 
 void print(SystemInfo &system_info)
 {
@@ -48,20 +57,31 @@ void print(SystemInfo &system_info)
 
 }
 
+volatile sig_atomic_t stop;
+void sig_handler(int signum) { stop = 1; }
+
+// TODO: НАТЫКАТЬ САНИТАЙЗЕРЫ
 int main(int argc, char **argv)
 {
+    signal(SIGINT, sig_handler);
+    signal(SIGTERM, sig_handler);
+
     SystemInfo system_info{};
-    SystemMonitor system_monitor{};
+    SystemMonitorFactory factory{};
+    const auto system_monitor = factory.create();
 
     // TODO: добавить сбор initial value по CPU
     print(system_info);
-    while (1)
+    while (!stop)
     {
-        system_monitor.collect(system_info);
+        system_monitor->collect(system_info);
         print(system_info);
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    //        break; // TODO: remove
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+//        break; // TODO: remove
     }
 
-   return 0;
+    // ВОПРОС: вероятно, очистка здесь лишняя, т.к. домен приложение в будет выгружен в любом случае после завершенния цикла
+    // Очистка вызывает задержку в завершении программы
+    factory.clear(system_monitor);
+    return 0;
 }
