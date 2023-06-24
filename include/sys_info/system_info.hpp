@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <thread>
 
 #include "cpu_load.hpp"
 #include "disk_stats.hpp"
@@ -24,4 +25,17 @@ struct SystemInfo
     std::vector<DiskStats> disk_stats;
     /** @brief A collection of a system processes representations */
     std::vector<Process> processes;
+
+    SystemInfo()
+    {
+        // TODO: check
+        std::vector<CpuLoad> cpu_loads;
+        auto cpu_cores_count = std::thread::hardware_concurrency();
+        cpu_loads.reserve(cpu_cores_count);
+        for (int i = 0; i < cpu_cores_count; ++i)
+        {
+            cpu_loads.emplace_back();
+        }
+        cpu_load_collection = std::move(cpu_loads);
+    }
 };

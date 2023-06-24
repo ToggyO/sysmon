@@ -1,35 +1,43 @@
 #include "cpu_reader_linux.hpp"
 #include "../linux_constants.hpp" // m_source_name, m_cpu_prefix
 
-CpuReaderLinux::CpuReaderLinux(std::chrono::milliseconds cpu_usage_delay)
-    : m_cpu_usage_delay{cpu_usage_delay},
-    m_cpus_count{std::thread::hardware_concurrency()},
-    m_first_measurement{},
-    m_second_measurement{}
+CpuReaderLinux::CpuReaderLinux(SystemFilesReader *files_reader)
+    : m_cpus_count{std::thread::hardware_concurrency()},
+    m_measurements{},
+    m_prev_results{},
+    m_files_reader{files_reader}
 {
-    m_first_measurement.reserve(m_cpus_count);
-    m_second_measurement.reserve(m_cpus_count);
+    m_measurements.reserve(m_cpus_count);
+    m_prev_results.reserve(m_cpus_count);
+
+    for (int i = 0; i < m_cpus_count; ++i) // Initial values
+    {
+        m_prev_results.emplace_back();
+    }
 }
 
 void CpuReaderLinux::read(std::vector<CpuLoad> &cpu_loads_collection)
 {
-    m_first_measurement.clear();
-    m_second_measurement.clear();
-    // TODO: remove
-    // auto cpus_count = std::thread::hardware_concurrency();
+    m_measurements.clear();
 
-    // auto first_measurement = std::vector<CpuStats>();
-    // first_measurement.reserve(m_cpus_count);
-    // auto second_measurement = std::vector<CpuStats>();
-    // second_measurement.reserve(m_cpus_count);
+    m_read_cpu_data();
 
-    m_read_cpu_data(m_first_measurement);
+     for (size_t i = 0; i < m_cpus_count; i++)
+    {
+        const auto &actual = m_measurements[i];
+        auto &previous = m_prev_results[i];
 
-    std::this_thread::sleep_for(m_cpu_usage_delay);
+        // calculate delta jiffies
+        const double d_active_time = (double)actual.get_total_active() - previous.active;
+        const double d_idle_time =  (double)actual.get_total_idle() - previous.idle;
+        const double d_total_time = d_active_time + d_idle_time;
 
-    m_read_cpu_data(m_second_measurement);
+        double k = (d_active_time / d_total_time) * 100;
+        cpu_loads_collection.push_back(CpuLoad{std::to_string(i),k});
 
-    m_calculate_cpu_load(m_first_measurement, m_second_measurement, cpu_loads_collection, m_cpus_count);
+        previous.active = (double)actual.get_total_active();
+        previous.idle = (double)actual.get_total_idle();
+    }
 }
 
 void CpuReaderLinux::m_set_stats(std::istringstream &iss, CpuStats &cpu_stats)
@@ -43,12 +51,12 @@ void CpuReaderLinux::m_set_stats(std::istringstream &iss, CpuStats &cpu_stats)
     }
 }
 
-void CpuReaderLinux::m_read_cpu_data(std::vector<CpuStats> &stats_collection)
+void CpuReaderLinux::m_read_cpu_data()
 {
     CpuStats cpu_stats{};
 
-    std::ifstream proc_stat(m_source_name);
-    check_fs_is_open_or_throw(proc_stat, m_source_name);
+    std::stringstream proc_stat;
+    m_files_reader->read_proc_stat(proc_stat);
 
     std::string line;
     std::istringstream ss;
@@ -58,33 +66,13 @@ void CpuReaderLinux::m_read_cpu_data(std::vector<CpuStats> &stats_collection)
     {
         ss.clear();
         ss.str(line);
-        auto k = line.rfind(m_cpu_prefix, 0);
+        auto k = line.rfind(LinuxConstants::m_cpu_prefix, 0);
         if (k != 0)
         {
             break;
         }
         CpuStats stats{};
         m_set_stats(ss, stats);
-        stats_collection.push_back(std::move(stats));
-    }
-}
-
-void CpuReaderLinux::m_calculate_cpu_load(
-    const std::vector<CpuStats> &first_measurement,
-    const std::vector<CpuStats> &second_measurement,
-    std::vector<CpuLoad> &cpu_loads_collection,
-    size_t cpu_count)
-{
-    for (size_t i = 0; i < cpu_count; i++)
-    {
-        const auto &first = first_measurement[i];
-        const auto &second = second_measurement[i];
-
-        const auto active_time = (double)(second.get_total_active() - first.get_total_active());
-        const auto idle_time = (double)(second.get_total_idle() - first.get_total_idle());
-        const double total_time = active_time + idle_time;
-
-        double k = (active_time / total_time) * 100;
-        cpu_loads_collection.push_back(CpuLoad{first.cpu_id,k});
+        m_measurements.push_back(std::move(stats));
     }
 }

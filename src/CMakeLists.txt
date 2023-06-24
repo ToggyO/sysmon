@@ -5,8 +5,8 @@ project(sysmon.src CXX)
 # set common source files
 set(COMMON_SOURCES
     "main.cpp"
-    "common/system_monitor.hpp"
-    "common/load_average.cpp"
+    #"common/system_monitor.hpp"
+    #"common/load_average.cpp"
     "common/error.cpp"
     "utils/utils.cpp"
 )
@@ -42,9 +42,4 @@ target_include_directories(
 	PRIVATE
 	${CMAKE_SOURCE_DIR}/lib
     ../include
-)
-
-# TODO: check
-target_link_libraries(sysmon PRIVATE
-    # console
 )
