@@ -2,9 +2,10 @@
 
 #include <string>
 
+// TODO: add descr
 namespace LinuxConstants
 {
-    // TODO: add descr. Add namespace
+    /** @brief Path to file contains information detailing how long the system has been on since its last restart */
     const static std::string k_uptime_file_path = "/proc/uptime";
 
     const static std::string k_os_file_path = "/etc/os-release";
@@ -34,7 +35,7 @@ namespace LinuxConstants
     const static ushort k_cstime_index = 16;
 
     const static ushort k_proc_stat_start_time_index = 21;
-/** @brief Path to file, that keeps track of a variety of different statistics about the system since it was last restarted */
+    /** @brief Path to file, that keeps track of a variety of different statistics about the system since it was last restarted */
     const static std::string m_source_name = "/proc/stat";
 /** @brief Allows you to determine the presence of information about the loading of cpu cores when reading from the file /proc/stat */
     const static std::string m_cpu_prefix = "cpu";

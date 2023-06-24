@@ -1,5 +1,7 @@
 #include "proccess_builder_linux.hpp"
 
+// TODO: оптимизировать обращение к файлу /proc/<pid>/status (read_process_status)
+
 ProcessBuilderLinux::ProcessBuilderLinux(SystemFilesReader *file_reader, CommonDataReaderLinux *common_data_reader)
     : m_file_reader{file_reader},
       m_common_data_reader{common_data_reader}
@@ -16,8 +18,7 @@ void ProcessBuilderLinux::build_processes(std::vector<Process> &processes)
 
         Process process((size_t)std::stoi(name));
 
-        this->calculate_process_uptime(process);
-        this->calculate_cpu_utilization(process);
+        this->calculate_cpu_utilization_and_uptime(process);
         this->calculate_command(process);
         this->calculate_memory_usage(process);
         this->calculate_process_owner(process);
@@ -26,7 +27,7 @@ void ProcessBuilderLinux::build_processes(std::vector<Process> &processes)
     }
 }
 
-void ProcessBuilderLinux::calculate_cpu_utilization(Process &process)
+void ProcessBuilderLinux::calculate_cpu_utilization_and_uptime(Process &process)
 {
     std::stringstream ss;
     m_file_reader->read_process_stat(ss, process.pid);
@@ -34,28 +35,34 @@ void ProcessBuilderLinux::calculate_cpu_utilization(Process &process)
     double raw_cpu_usage = 0;
     std::string line;
     std::string temp_value;
-    if (std::getline(ss, line))
-    {
-        std::istringstream iss{line};
-        for (int i = 0; i <= LinuxConstants::k_cstime_index; ++i)
-        {
-            iss >> temp_value;
-            switch (i)
-            {
-                case LinuxConstants::k_utime_index:
-                case LinuxConstants::k_stime_index:
-                case LinuxConstants::k_cutime_index:
-                case LinuxConstants::k_cstime_index:
-                    raw_cpu_usage += std::stod(temp_value);
-                    break;
-                default:
-                    break;
-            }
-        }
 
-        const double current_runtime = raw_cpu_usage / (double)sysconf(_SC_CLK_TCK);
-        process.cpu_usage = current_runtime / (double)process.uptime;
+    if (!std::getline(ss, line)) { return; }
+
+    std::istringstream iss{line};
+    for (int i = 0; i <= LinuxConstants::k_proc_stat_start_time_index; ++i)
+    {
+        iss >> temp_value;
+        switch (i)
+        {
+            case LinuxConstants::k_utime_index:
+            case LinuxConstants::k_stime_index:
+            case LinuxConstants::k_cutime_index:
+            case LinuxConstants::k_cstime_index:
+                raw_cpu_usage += std::stod(temp_value);
+                break;
+            case LinuxConstants::k_proc_stat_start_time_index:
+            {
+                size_t start_time = std::stol(temp_value) / sysconf(_SC_CLK_TCK);
+                process.uptime = m_common_data_reader->get_system_uptime() - start_time;
+                break;
+            }
+            default:
+                break;
+        }
     }
+
+    const double current_runtime = raw_cpu_usage / (double)sysconf(_SC_CLK_TCK);
+    process.cpu_usage = current_runtime / (double)process.uptime;
 }
 
 void ProcessBuilderLinux::calculate_command(Process &process)
@@ -83,26 +90,6 @@ void ProcessBuilderLinux::calculate_process_owner(Process &process)
         iss.clear();
         iss.str(line);
         iss >> process.user;
-    }
-}
-
-void ProcessBuilderLinux::calculate_process_uptime(Process &process)
-{
-    std::stringstream ss;
-    m_file_reader->read_process_stat(ss, process.pid);
-
-    std::string line;
-    std::string temp_value;
-    if (std::getline(ss, line))
-    {
-        std::istringstream iss{line};
-        for (int i = 0; i <= LinuxConstants::k_proc_stat_start_time_index; ++i)
-        {
-            iss >> temp_value;
-        }
-
-        size_t start_time = std::stol(temp_value) / sysconf(_SC_CLK_TCK);
-        process.uptime = m_common_data_reader->get_system_uptime() - start_time;
     }
 }
 

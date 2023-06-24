@@ -28,10 +28,10 @@ class ProcessBuilderLinux
         void build_processes(std::vector<Process> &);
 
     private:
-        /** @brief Calculate process CPU usage by process identifier
-         * @param Process Process entity
-         */
-        void calculate_cpu_utilization(Process &);
+        /** @brief Calculate process CPU usage by process identifier and set process up time
+        * @param Process Process entity
+        */
+        void calculate_cpu_utilization_and_uptime(Process &);
 
         /** @brief Set process start command
         * @param Process Process entity
@@ -47,11 +47,6 @@ class ProcessBuilderLinux
         * @param Process Process entity
         */
         void calculate_process_owner(Process &);
-
-        /** @brief Set process up time
-        * @param Process Process entity
-        */
-        void calculate_process_uptime(Process &);
 
         /** @brief Set process UID
          * @static
