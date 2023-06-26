@@ -68,6 +68,7 @@ struct io_device {
 // TODO: проверить присваивания , может сделать указатели в целях экономии памяти и времени выполнения
 void SystemMonitor::collect_disks_usage(SystemInfo &system_info)
 {
+    // TODO: implement me in future
 	// std::vector<std::unique_ptr<io_device>> devices;
 	// std::vector<size_t> stats;
 

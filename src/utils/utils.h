@@ -11,3 +11,6 @@ bool is_number(const std::string &);
  * @return result of command executing
  */
 std::string exec(std::string &command);
+
+// TODO: add descr
+void elapsed_time(std::string &formatted_output, size_t seconds);
