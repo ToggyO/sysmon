@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/sysmon.dir/common/error.cpp.o"
+  "CMakeFiles/sysmon.dir/common/error.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/common_data_reader/common_data_reader_linux.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/common_data_reader/common_data_reader_linux.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/cpu_reader/cpu_reader_linux.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/cpu_reader/cpu_reader_linux.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/filesystem/system_files_reader_linux.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/filesystem/system_files_reader_linux.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/pinter/ncurses_printer.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/pinter/ncurses_printer.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/process_builder/proccess_builder_linux.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/process_builder/proccess_builder_linux.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/sys_info/cpu_stats.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/sys_info/cpu_stats.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/sys_info/process.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/sys_info/process.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/cpu.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/cpu.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/disks.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/disks.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/load_average.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/load_average.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/memory.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/memory.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/os_name.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/os_name.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/processes.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/processes.cpp.o.d"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/up_time.cpp.o"
+  "CMakeFiles/sysmon.dir/linux/system_monitor/up_time.cpp.o.d"
+  "CMakeFiles/sysmon.dir/main.cpp.o"
+  "CMakeFiles/sysmon.dir/main.cpp.o.d"
+  "CMakeFiles/sysmon.dir/utils/utils.cpp.o"
+  "CMakeFiles/sysmon.dir/utils/utils.cpp.o.d"
+  "sysmon"
+  "sysmon.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/sysmon.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

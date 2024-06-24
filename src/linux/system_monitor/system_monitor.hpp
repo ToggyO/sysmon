@@ -13,7 +13,7 @@ class SystemMonitor
         /** @brief Creates new instance of SystemMonitor
          * @param SystemFilesReader* Pointer to instance of Linux system file reader
          */
-       explicit SystemMonitor(SystemFilesReader *files_reader)
+       explicit SystemMonitor(SystemFilesReader *files_reader) // TODO: shared_ptr
             : m_cpu_reader(new CpuReaderLinux(files_reader)),
             m_common_data_reader{new CommonDataReaderLinux(files_reader)},
             m_process_builder(new ProcessBuilderLinux(files_reader, m_common_data_reader))

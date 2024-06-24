@@ -13,8 +13,14 @@
 /** @brief Struct holds system monitoring information */
 struct SystemInfo
 {
+private:
+    bool m_is_os_name_set;
+
+public:
     /** @brief Operating system name */
-    std::string os_name;
+    std::string os_name; // TODO: move to private!!!!!!
+
+
     /** @brief Operating system up time */
     size_t uptime;
     /** @brief Represents load average stats */
@@ -28,7 +34,7 @@ struct SystemInfo
     /** @brief A collection of a system processes representations */
     std::vector<Process> processes;
 
-    SystemInfo()
+    SystemInfo() : m_is_os_name_set{false}
     {
         // TODO: check
         std::vector<CpuLoad> cpu_loads;
@@ -39,5 +45,21 @@ struct SystemInfo
             cpu_loads.emplace_back();
         }
         cpu_load_collection = std::move(cpu_loads);
+    }
+
+    void set_os_name(std::string&& os_name)
+    {
+        os_name = std::move(os_name);
+        m_is_os_name_set = true;
+    }
+
+    const std::string& get_os_name() const
+    {
+        return os_name;
+    }
+
+    bool is_os_name_set() const
+    {
+        return m_is_os_name_set;
     }
 };

@@ -7,12 +7,12 @@ static std::string k_mem_units = "G";
 //const int ram_column = 26;
 //const int time_column = 35;
 //const int command_column = 46;
-const int pid_column = 2;
-const int user_column = 9;
-const int cpu_column = 22;
-const int ram_column = 30;
-const int time_column = 42;
-const int command_column = 54;
+constexpr int pid_column = 2;
+constexpr int user_column = 9;
+constexpr int cpu_column = 22;
+constexpr int ram_column = 30;
+constexpr int time_column = 42;
+constexpr int command_column = 54;
 
 NCursesPrinter::NCursesPrinter(int n) // TODO: check n
 {
@@ -21,25 +21,30 @@ NCursesPrinter::NCursesPrinter(int n) // TODO: check n
 //    noecho(); // do not print input values
 //    cbreak(); // terminate ncurses on ctrl + c
     start_color(); // enable color
-    int x_max = getmaxx(stdscr);
-    int y_max = getmaxy(stdscr);
-    int system_window_height = 9;
+    nodelay(stdscr, true);
 
-//    m_system_window = newwin(system_window_height, x_max - 1, 0, 0);
-    m_system_window = newwin(system_window_height, (x_max / 2) - 1, 0, 0);
-    m_cpu_window = newwin(system_window_height, x_max / 2, 0, x_max / 2);
-    m_process_window = newwin(y_max - system_window_height, x_max - 1, m_system_window->_maxy, 0);
+//    struct sigaction sa{};
+//    memset(&sa, 0, sizeof(struct sigaction));
+//    sa.sa_handler = handle_winch;
+//    sigaction(SIGWINCH, &sa, nullptr);
+
+    init_pair(1, COLOR_BLUE, -1);
+    init_pair(2, COLOR_GREEN, -1);
+
+    m_scr_max_x = getmaxx(stdscr);
+    m_scr_max_y = getmaxy(stdscr);
+
+    m_system_window = newwin(m_upper_window_height, (m_scr_max_x / 2) - 1, 0, 0);
+    m_cpu_window = newwin(m_upper_window_height, m_scr_max_x / 2, 0, m_scr_max_x / 2);
+    m_process_window = newwin(m_scr_max_y - m_upper_window_height, m_scr_max_x - 1, m_system_window->_maxy, 0);
 }
 
 void NCursesPrinter::print(SystemInfo &system_info)
 {
-    init_pair(1, COLOR_BLUE, -1);
-    init_pair(2, COLOR_GREEN, -1);
-//    init_pair(3, COLOR_BLACK, COLOR_CYAN);
+    if (wgetch(stdscr) == KEY_RESIZE) { resize(); }
 
     box(m_system_window, 0, 0);
     box(m_cpu_window, 0, 0);
-//    box(m_process_window, 0, 0);
 
     print_system(system_info);
     print_cpu(system_info);
@@ -48,6 +53,7 @@ void NCursesPrinter::print(SystemInfo &system_info)
     wrefresh(m_system_window);
     wrefresh(m_cpu_window);
     wrefresh(m_process_window);
+
     refresh();
 }
 
@@ -62,11 +68,11 @@ void NCursesPrinter::print_system(SystemInfo &system_info)
 
     mvwprintw(m_system_window, ++row, 2, "Mem: ");
     wattron(m_system_window, COLOR_PAIR(1));
-    mvwprintw(m_system_window, row, 10, " ");
+//    mvwprintw(m_system_window, row, 10, " ");
     std::string mem_bar;
     double total_memory = convert_unit(static_cast<double>(system_info.memory_stats.total_memory), GIGABYTES, KILOBYTES);
     double used_memory = convert_unit(static_cast<double>(system_info.memory_stats.used_memory), GIGABYTES, KILOBYTES);
-    build_progress_bar(mem_bar, used_memory, total_memory, k_mem_units);
+    build_progress_bar(mem_bar, used_memory, total_memory, (int)(m_system_window->_maxx * 0.5), k_mem_units);
     wprintw(m_system_window, "%s", mem_bar.c_str());
     wattroff(m_system_window, COLOR_PAIR(1));
 
@@ -75,48 +81,42 @@ void NCursesPrinter::print_system(SystemInfo &system_info)
 
 void NCursesPrinter::print_cpu(SystemInfo &system_info)
 {
-    //    for (int i = 4; i < 10; ++i)
+    // TODO: remove
+//    for (int i = 4; i < 10; ++i)
 //    {
 //        system_info.cpu_load_collection.push_back(CpuLoad{std::to_string(i), 0.55});
 //    }
+//    //
     int row = 0;
-//    int column;
+    int column;
 
     mvwprintw(m_cpu_window, ++row, 2, "CPU: ");
     wattron(m_cpu_window, COLOR_PAIR(1));
 
-//    ++row;
+    ++row;
 
     std::string cpu_bar;
-    ushort i = 0;
-    for (const auto & cpu_load : system_info.cpu_load_collection)
+    bool is_shift_needed;
+    for (int i = 1; i <= system_info.cpu_load_collection.size(); ++i)
     {
-//        if (i == 0 || i % 2 != 0)
-//        {
-//            column = 2; // TODO: в константы
-//        }
-//        else
-//        {
+        is_shift_needed = i % 2 == 0;
+        if (is_shift_needed)
+        {
 //            column = 50; // TODO: в константы
-//        }
-//
-//
-//        build_progress_bar(cpu_bar, cpu_load.usage_percentage);
-//        mvwprintw(m_cpu_window, row, column, "%d:  %s", i, cpu_bar.c_str());
-//
-//        if (column == 50)
-//        {
-//            ++row;
-//        }
-//        ++i;
+            column = m_cpu_window->_maxx / 2; // TODO: в константы  ТУТ РАЗОБРАТЬСЯ
+        }
+        else
+        {
+            column = 2; // TODO: в константы
+        }
+                                                                                                                    // TODO: ТУТ РАЗОБРАТЬСЯ
+        build_progress_bar(cpu_bar, system_info.cpu_load_collection[i - 1].usage_percentage, (int)(m_system_window->_maxx * 0.3));
+        mvwprintw(m_cpu_window, row, column, "%d:  %s", i - 1, cpu_bar.c_str());
 
-        build_progress_bar(cpu_bar, cpu_load.usage_percentage);
-        mvwprintw(m_cpu_window, ++row, 2, "%d:  %s", i, cpu_bar.c_str());
-        ++i;
-
-
-//        wprintw(m_cpu_window, "%s\n", cpu_bar.c_str());
-//        wprintw(m_cpu_window, "%s: %s%%\n", cpu_load.cpu_id.c_str(), std::to_string(cpu_load.usage_percentage).c_str());
+        if (is_shift_needed)
+        {
+            ++row;
+        }
     }
     wattroff(m_cpu_window, COLOR_PAIR(1));
 
@@ -127,7 +127,6 @@ void NCursesPrinter::print_processes(SystemInfo &system_info)
 {
     int row = 0;
 
-//    wbkgd(m_process_window, COLOR_PAIR(3));
     wattron(m_process_window, COLOR_PAIR(2));
     mvwprintw(m_process_window, ++row, pid_column, "PID");
     mvwprintw(m_process_window, row, user_column, "USER");
@@ -161,15 +160,15 @@ void NCursesPrinter::print_processes(SystemInfo &system_info)
     }
 }
 
-void NCursesPrinter::build_progress_bar(std::string &bar, double percent)
+void NCursesPrinter::build_progress_bar(std::string &bar, double percent, int bar_width)
 {
     // TODO: duplicate
     std::stringstream result;
     result <<  "0%";
-    int size = 50;
-    double bars = percent * size;
+//    int size = 25; // TODO: сделать отзывчивой ширину бара
+    double bars = percent * bar_width;
 
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < bar_width; ++i)
     {
         result << (i <= bars ? '|' : ' ');
     }
@@ -177,6 +176,7 @@ void NCursesPrinter::build_progress_bar(std::string &bar, double percent)
     std::string display = std::to_string(percent * 100).substr(0, 4);
     if (percent < 0.1 || percent == 1.0)
     {
+        result << ' ';
         display = std::to_string(percent * 100).substr(0, 3);
     }
 
@@ -184,19 +184,34 @@ void NCursesPrinter::build_progress_bar(std::string &bar, double percent)
     bar = result.str();
 }
 
-void NCursesPrinter::build_progress_bar(std::string &bar, double actual_value, double total_value, std::string& units)
+void NCursesPrinter::build_progress_bar(std::string &bar, double actual_value, double total_value, int bar_width, std::string& units)
 {
     // TODO: duplicate
     std::stringstream result;
-    int size = 50;
+//    int size = 50;
+//    int size = m; // TODO: сделать отзывчивой ширину бара
     double percent = actual_value / total_value;
-    double bars = percent * size;
+    double bars = percent * bar_width;
 
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < bar_width; ++i)
     {
         result << (i <= bars ? '|' : ' ');
     }
 
     result << " " << std::setprecision(3) << actual_value << '/' << std::setprecision(3) << total_value << units;
     bar = result.str();
+}
+
+void NCursesPrinter::resize()
+{
+    getmaxyx(stdscr, m_scr_max_y, m_scr_max_x);
+
+    wclear(m_system_window);
+    wclear(m_cpu_window);
+    wclear(m_process_window);
+
+    wresize(m_system_window, m_upper_window_height, (m_scr_max_x / 2) - 1);
+    wresize(m_cpu_window, m_upper_window_height, m_scr_max_x / 2);
+    mvwin(m_cpu_window, 0, m_scr_max_x / 2);
+    wresize(m_process_window, m_scr_max_y - m_upper_window_height, m_scr_max_x - 1);
 }

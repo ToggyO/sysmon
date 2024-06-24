@@ -11,7 +11,8 @@ set(COMMON_SOURCES
 
 # detect system type
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    file(GLOB METER_SOURCES "linux/*.cpp" "linux/*.hpp" "linux/**/*.cpp" "linux/**/*.hpp")
+    # TODO: check
+    file(GLOB METER_SOURCES "linux/*.cpp" "linux/*.hpp" "linux/**/*.cpp" "linux/**/*.hpp"     "linux-epoll/*.cpp" "linux-epoll/*.hpp" "linux-epoll/**/*.hpp" "linux-epoll/**/*.cpp")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(METER_SOURCES)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
@@ -20,7 +21,8 @@ else()
     message(FATAL_ERROR "Unsupported OS - '${CMAKE_SYSTEM_NAME}'")
 endif()
 
-add_executable(sysmon ${COMMON_SOURCES} ${METER_SOURCES})
+add_executable(sysmon ${COMMON_SOURCES} ${METER_SOURCES}
+    linux-epoll/system_monitor.hpp linux-epoll/system_monitor.cpp)
 
 # detect system type to add OS specific libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")

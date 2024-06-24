@@ -26,11 +26,17 @@ class NCursesPrinter
 
         void print_processes(SystemInfo &system_info);
 
-        void build_progress_bar(std::string &bar, double percent);
+        void build_progress_bar(std::string &bar, double percent, int bar_width);
 
-        void build_progress_bar(std::string &bar, double actual_value, double total_value, std::string& units);
+        void build_progress_bar(std::string &bar, double actual_value, double total_value, int bar_width, std::string& units);
+
+        void resize();
 
         WINDOW *m_system_window;
         WINDOW *m_cpu_window;
         WINDOW *m_process_window;
+
+        int m_scr_max_y;
+        int m_scr_max_x;
+        const int m_upper_window_height = 9;
 };

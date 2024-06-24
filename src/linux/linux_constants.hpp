@@ -40,13 +40,13 @@ namespace LinuxConstants
     const static std::string k_cached = "Cached";
     const static std::string k_sreclaimable = "SReclaimable";
 
-    const static ushort k_utime_index = 13;
+    inline constexpr ushort k_utime_index = 13;
 
-    const static ushort k_stime_index = 14;
+    inline constexpr ushort k_stime_index = 14;
 
-    const static ushort k_cutime_index = 15;
+    inline constexpr ushort k_cutime_index = 15;
 
-    const static ushort k_cstime_index = 16;
+    inline constexpr ushort k_cstime_index = 16;
 
-    const static ushort k_proc_stat_start_time_index = 21;
+    inline constexpr ushort k_proc_stat_start_time_index = 21;
 }
