@@ -16,15 +16,15 @@ jobs:
         with:
           submodules: true
 
-#      - name: Install GTest TODO: uncomment after tests is needed
-#        run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
+      - name: Install GTest
+        run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
 
       - run: cmake -B ./build -DPATCH_VERSION=${{ github.run_number }}
 
       - run: cmake --build ./build
 
-#      - name: Run tests
-#        run: cd ./build/tests && ctest TODO: uncomment after tests is needed
+      - name: Run tests
+        run: cd ./build/tests && ctest
 
       - run: cmake --build ./build --target package
 
