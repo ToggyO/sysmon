@@ -15,6 +15,8 @@ struct SystemInfo
 {
     /** @brief Operating system name */
     std::string os_name;
+    /** @brief Operating system up time */
+    size_t uptime;
     /** @brief Represents load average stats */
     LoadAverageStats load_average_stats;
     /** @brief A collection of CPU cores load */

@@ -4,10 +4,7 @@
 
 #include "../../common/constants.hpp" // Constants::k_colon_delimiter
 #include "../../common/error.h" // check_fs_is_open_or_throw
-// #include "../common/system_monitor.hpp"
 #include "system_monitor.hpp"
-
-#include "../linux_constants.hpp" // k_source_name, k_mem_total, k_mem_free, k_shmem, k_buffers, k_cached, k_sreclaimable
 
 unsigned int substr_and_stoi(const std::string &value, const size_t value_start, const size_t value_end)
 {
