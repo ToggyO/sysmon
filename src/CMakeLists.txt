@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(sysmon.src CXX)
-
 # set common source files
 set(COMMON_SOURCES
     "main.cpp"
@@ -20,7 +18,7 @@ else()
     message(FATAL_ERROR "Unsupported OS - '${CMAKE_SYSTEM_NAME}'")
 endif()
 
-add_executable(sysmon ${COMMON_SOURCES} ${METER_SOURCES})
+add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${METER_SOURCES})
 
 # detect system type to add OS specific libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
