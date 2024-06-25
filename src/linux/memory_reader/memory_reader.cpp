@@ -1,13 +1,19 @@
 #include "memory_reader.hpp"
 
-MemoryReader::MemoryReader(ISystemFilesReader* files_reader)
-    : m_files_reader{files_reader}
+MemoryReader::MemoryReader(const std::shared_ptr<ISystemFilesReader>& files_reader_ptr)
+    : m_files_reader_ptr{files_reader_ptr}
 {}
 
 void MemoryReader::read(MemoryStats& mem_stats) const
 {
+    auto files_reader = m_files_reader_ptr.lock();
+    if (!files_reader)
+    {
+        throw std::runtime_error("MemoryReader: files reader is required");
+    }
+
     std::stringstream proc_mem_info;
-    m_files_reader->read_proc_meminfo(proc_mem_info);
+    files_reader->read_proc_meminfo(proc_mem_info);
 
     std::string line;
     std::string key;

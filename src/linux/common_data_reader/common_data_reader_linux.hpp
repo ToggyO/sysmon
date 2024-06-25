@@ -15,9 +15,9 @@ class CommonDataReaderLinux
 {
     public:
         /** @brief Creates new instance of CommonDataReaderLinux
-         * @param file_reader Pointer to instance of ISystemFilesReader
+         * @param files_reader_ptr Pointer to instance of ISystemFilesReader
         */
-        explicit CommonDataReaderLinux(ISystemFilesReader *file_reader);
+        explicit CommonDataReaderLinux(const std::shared_ptr<ISystemFilesReader>& files_reader_ptr);
 
         /** @brief Set operational system name
         * @param std::string Reference to result variable
@@ -30,5 +30,5 @@ class CommonDataReaderLinux
         size_t get_system_uptime();
 
     private:
-        ISystemFilesReader *const m_file_reader;
+        std::weak_ptr<ISystemFilesReader> m_files_reader_ptr;
 };

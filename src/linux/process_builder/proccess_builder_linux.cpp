@@ -2,9 +2,9 @@
 
 // TODO: оптимизировать обращение к файлу /proc/<pid>/status (read_process_status)
 
-ProcessBuilderLinux::ProcessBuilderLinux(ISystemFilesReader *file_reader, CommonDataReaderLinux *common_data_reader)
-    : m_file_reader{file_reader},
-      m_common_data_reader{common_data_reader}
+ProcessBuilderLinux::ProcessBuilderLinux(const std::shared_ptr<ISystemFilesReader>& files_reader_ptr, const std::shared_ptr<CommonDataReaderLinux>& common_data_reader_ptr)
+    : m_file_reader_ptr{files_reader_ptr},
+      m_common_data_reader_ptr{common_data_reader_ptr}
 {}
 
 void ProcessBuilderLinux::build_processes(std::vector<Process> &processes)
@@ -30,7 +30,7 @@ void ProcessBuilderLinux::build_processes(std::vector<Process> &processes)
 void ProcessBuilderLinux::calculate_cpu_utilization_and_uptime(Process &process)
 {
     std::stringstream ss;
-    m_file_reader->read_process_stat(ss, process.pid);
+    m_file_reader_ptr->read_process_stat(ss, process.pid);
 
     double raw_cpu_usage = 0;
     std::string line;
@@ -53,7 +53,7 @@ void ProcessBuilderLinux::calculate_cpu_utilization_and_uptime(Process &process)
             case LinuxConstants::k_proc_stat_start_time_index:
             {
                 size_t start_time = std::stol(temp_value) / sysconf(_SC_CLK_TCK);
-                process.uptime = m_common_data_reader->get_system_uptime() - start_time;
+                process.uptime = m_common_data_reader_ptr->get_system_uptime() - start_time;
                 break;
             }
             default:
@@ -68,14 +68,14 @@ void ProcessBuilderLinux::calculate_cpu_utilization_and_uptime(Process &process)
 void ProcessBuilderLinux::calculate_command(Process &process)
 {
     std::stringstream ss;
-    m_file_reader->read_process_cmdline(ss, process.pid);
+    m_file_reader_ptr->read_process_cmdline(ss, process.pid);
     std::getline(ss, process.command);
 }
 
 void ProcessBuilderLinux::calculate_process_owner(Process &process)
 {
     std::stringstream ss;
-    m_file_reader->read_process_etc_passwd(ss, process.pid);
+    m_file_reader_ptr->read_process_etc_passwd(ss, process.pid);
 
     std::string line;
     std::istringstream iss;
@@ -96,7 +96,7 @@ void ProcessBuilderLinux::calculate_process_owner(Process &process)
 void ProcessBuilderLinux::calculate_memory_usage(Process &process)
 {
     std::stringstream ss;
-    m_file_reader->read_process_status(ss, process.pid);
+    m_file_reader_ptr->read_process_status(ss, process.pid);
 
     std::string line;
     std::string key;
@@ -122,7 +122,7 @@ void ProcessBuilderLinux::calculate_memory_usage(Process &process)
 void ProcessBuilderLinux::set_uid(const size_t &process_id, std::string &uid)
 {
     std::stringstream ss;
-    m_file_reader->read_process_status(ss, process_id);
+    m_file_reader_ptr->read_process_status(ss, process_id);
 
     std::string line;
     std::string key;

@@ -15,7 +15,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(METER_SOURCES)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
-    set(METER_SOURCES linux/pinter/ncurses_printer.cpp linux/pinter/ncurses_printer.hpp) # TODO: remove
+    set(METER_SOURCES)
 else()
     message(FATAL_ERROR "Unsupported OS - '${CMAKE_SYSTEM_NAME}'")
 endif()

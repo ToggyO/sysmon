@@ -1,11 +1,11 @@
 #include "cpu_reader_linux.hpp"
 #include "../linux_constants.hpp" // m_source_name, m_cpu_prefix
 
-CpuReaderLinux::CpuReaderLinux(ISystemFilesReader *files_reader)
+CpuReaderLinux::CpuReaderLinux(const std::shared_ptr<ISystemFilesReader>& files_reader_ptr)
     : m_cpus_count{std::thread::hardware_concurrency()},
     m_measurements{},
     m_prev_results{},
-    m_files_reader{files_reader}
+    m_files_reader_ptr{files_reader_ptr}
 {
     m_measurements.reserve(m_cpus_count);
     m_prev_results.reserve(m_cpus_count);
@@ -53,10 +53,16 @@ void CpuReaderLinux::m_set_stats(std::istringstream &iss, CpuStats &cpu_stats)
 
 void CpuReaderLinux::m_read_cpu_data()
 {
+    auto files_reader = m_files_reader_ptr.lock();
+    if (!files_reader)
+    {
+        throw std::runtime_error("CpuReaderLinux: files reader is required");
+    }
+
     CpuStats cpu_stats{};
 
     std::stringstream proc_stat;
-    m_files_reader->read_proc_stat(proc_stat);
+    files_reader->read_proc_stat(proc_stat);
 
     std::string line;
     std::istringstream ss;
