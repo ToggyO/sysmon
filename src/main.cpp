@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     while (!stop)
     {
         system_monitor->collect(system_info);
-        p.print(system_info);
+        p.print(system_info); // TODO: поправить вывод RAM
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
     }
 

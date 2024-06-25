@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "sys_info/process.hpp"
-#include "../filesystem/system_files_reader.hpp"
+#include "../filesystem/system_files_reader.interface.hpp"
 #include "../linux_constants.hpp" // k_proc_directory
 #include "../common_data_reader/common_data_reader_linux.hpp"
 #include "../../common/constants.hpp" // Constants::k_colon_delimiter
@@ -17,10 +17,10 @@ class ProcessBuilderLinux
 {
     public:
         /** @bried Creates new instance of ProcessBuilderLinux
-         * @param SystemFilesReader* Pointer to instance of Linux system file reader
+         * @param ISystemFilesReader* Pointer to instance of Linux system file reader
          * @param CommonDataReaderLinux* Pointer to instance of common Linux specific data collector
          */
-        ProcessBuilderLinux(SystemFilesReader *file_reader, CommonDataReaderLinux *common_data_reader);
+        ProcessBuilderLinux(ISystemFilesReader *file_reader, CommonDataReaderLinux *common_data_reader);
 
         /** @bried Creates new instance of ProcessBuilderLinux
          * @param std::vector<Process> Reference to collection of instances of Process
@@ -57,7 +57,7 @@ class ProcessBuilderLinux
         void set_uid(const size_t &, std::string &);
 
         /** @bried Linux system file reader interface */
-        SystemFilesReader *const m_file_reader;
+        ISystemFilesReader *const m_file_reader;
         /** @brief Represents functionality for collecting common Linux specific data */
         CommonDataReaderLinux *const m_common_data_reader;
 };

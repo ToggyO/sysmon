@@ -1,69 +1,66 @@
-#include <filesystem>
-#include <iostream>
-#include <sys/statvfs.h>
-#include <fstream>
-#include <vector>
-
-#include "../../common/error.h" // print_collection_error
-// #include "../common/system_monitor.hpp"
 #include "system_monitor.hpp"
 
-// TODO: check
-struct io_stats
+void set_stats(SystemInfo &system_info, const double averages[], int averages_count)
 {
-    /* # of sectors read */
-	unsigned long rd_sectors;
-	/* # of sectors written */
-	unsigned long wr_sectors;
-	/* # of sectors discarded */
-	unsigned long dc_sectors;
-	/* # of read operations issued to the device */
-	unsigned long rd_ios;
-	/* # of read requests merged */
-	unsigned long rd_merges;
-	/* # of write operations issued to the device */
-	unsigned long wr_ios;
-	/* # of write requests merged */
-	unsigned long wr_merges;
-	/* # of discard operations issued to the device */
-	unsigned long dc_ios;
-	/* # of discard requests merged */
-	unsigned long dc_merges;
-	/* # of flush requests issued to the device */
-	unsigned long fl_ios;
-	/* Time of read requests in queue */
-	unsigned int  rd_ticks;
-	/* Time of write requests in queue */
-	unsigned int  wr_ticks;
-	/* Time of discard requests in queue */
-	unsigned int  dc_ticks;
-	/* Time of flush requests in queue */
-	unsigned int  fl_ticks;
-	/* # of I/Os in progress */
-	unsigned int  ios_pgr;
-	/* # of ticks total (for this device) for I/O */
-	unsigned int  tot_ticks;
-	/* # of ticks requests spent in queue */
-	unsigned int  rq_ticks;
-};
+    auto *stats_p = (double *)&system_info.load_average_stats;
+    for (int i = 0; i < averages_count; ++i)
+    {
+        *stats_p = averages[i];
+        stats_p++;
+    }
+}
 
-struct io_device {
-	std::string name;
-	/*
-	 * 0: Not a whole device (T_PART)
-	 * 1: whole device (T_DEV)
-	 * 2: whole device and all its partitions to be read (T_PART_DEV)
-	 * 3+: group name (T_GROUP) (4 means 1 device in the group, 5 means 2 devices in the group, etc.)
-	 */
-	int dev_tp;
-	/* TRUE if device exists in /proc/diskstats or /sys. Don't apply for groups. */
-	int exist;
-	/* major and minor numbers (not set for T_GROUP "devices") */
-	int major;
-	int minor;
-	struct io_stats *dev_stats[2];
-	struct io_device *next;
-};
+std::string SystemMonitor::collect_os_name()
+{
+    return m_common_data_reader->get_os_name();
+}
+
+void SystemMonitor::collect_cpu(SystemInfo &system_info)
+{
+    std::vector<CpuLoad> cpu_loads_collection;
+    m_cpu_reader->read(cpu_loads_collection);
+    system_info.cpu_load_collection = std::move(cpu_loads_collection);
+}
+
+void SystemMonitor::collect_load(SystemInfo &system_info)
+{
+    double empty = 0.00;
+    int averages_count = 3;
+    double averages[] { empty, empty, empty };
+    if (getloadavg(averages, averages_count) < 0)
+    {
+        set_stats(system_info, averages, averages_count);
+        return;
+    }
+
+    set_stats(system_info, averages, averages_count);
+}
+
+void SystemMonitor::collect_memory(SystemInfo &system_info)
+{
+    MemoryStats mem_stats;
+    m_mem_reader->read(mem_stats);
+    system_info.memory_stats = std::move(mem_stats);
+
+}
+
+void SystemMonitor::collect_processes_info(SystemInfo &system_info)
+{
+    std::vector<Process> processes;
+
+    m_process_builder->build_processes(processes);
+    std::sort(processes.begin(), processes.end(), [](const Process &p1, const Process &p2)
+    {
+        return p2 < p1;
+    });
+
+    system_info.processes = std::move(processes);
+}
+
+void SystemMonitor::collect_uptime(SystemInfo &system_info)
+{
+    system_info.uptime = m_common_data_reader->get_system_uptime();
+}
 
 // TODO: проверить присваивания , может сделать указатели в целях экономии памяти и времени выполнения
 void SystemMonitor::collect_disks_usage(SystemInfo &system_info)

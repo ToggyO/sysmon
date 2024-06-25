@@ -3,10 +3,10 @@
 
 #include "../linux_constants.hpp" // k_uptime_file_path
 
-CommonDataReaderLinux::CommonDataReaderLinux(SystemFilesReader *file_reader) : m_file_reader{file_reader}
+CommonDataReaderLinux::CommonDataReaderLinux(ISystemFilesReader *file_reader) : m_file_reader{file_reader}
 {}
 
-void CommonDataReaderLinux::set_os_name(std::string &os_name)
+std::string CommonDataReaderLinux::get_os_name()
 {
     std::stringstream ss;
     m_file_reader->read_etc_os_release(ss);
@@ -25,9 +25,10 @@ void CommonDataReaderLinux::set_os_name(std::string &os_name)
         if (key != LinuxConstants::k_pretty_name_key) { continue; }
 
         std::getline(tokenizer, value);
-        os_name = value;
         break;
     }
+
+    return value;
 }
 
 size_t CommonDataReaderLinux::get_system_uptime()

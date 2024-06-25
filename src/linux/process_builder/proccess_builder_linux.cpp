@@ -2,7 +2,7 @@
 
 // TODO: оптимизировать обращение к файлу /proc/<pid>/status (read_process_status)
 
-ProcessBuilderLinux::ProcessBuilderLinux(SystemFilesReader *file_reader, CommonDataReaderLinux *common_data_reader)
+ProcessBuilderLinux::ProcessBuilderLinux(ISystemFilesReader *file_reader, CommonDataReaderLinux *common_data_reader)
     : m_file_reader{file_reader},
       m_common_data_reader{common_data_reader}
 {}

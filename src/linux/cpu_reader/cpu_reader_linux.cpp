@@ -1,7 +1,7 @@
 #include "cpu_reader_linux.hpp"
 #include "../linux_constants.hpp" // m_source_name, m_cpu_prefix
 
-CpuReaderLinux::CpuReaderLinux(SystemFilesReader *files_reader)
+CpuReaderLinux::CpuReaderLinux(ISystemFilesReader *files_reader)
     : m_cpus_count{std::thread::hardware_concurrency()},
     m_measurements{},
     m_prev_results{},

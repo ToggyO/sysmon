@@ -9,16 +9,16 @@
 #include "../../../include/sys_info/cpu_load.hpp"
 #include "../sys_info/cpu_stats.hpp"
 #include "../../common/error.h" // check_fs_is_open_or_throw
-#include "../filesystem/system_files_reader.hpp"
+#include "../filesystem/system_files_reader.interface.hpp"
 
 /** @brief Represents functionality to read and handle CPU load */
 class CpuReaderLinux
 {
     public:
         /** @brief Creates new instance of CpuReaderLinux
-         * @param SystemFilesReader* Pointer to instance of SystemFilesReader
+         * @param ISystemFilesReader* Pointer to instance of ISystemFilesReader
         */
-        explicit CpuReaderLinux(SystemFilesReader *files_reader);
+        explicit CpuReaderLinux(ISystemFilesReader *files_reader);
 
         /** @brief Reads content of '/proc/stat' file, handle results and fill provided vector by CPU load info per core.
          * @static
@@ -40,5 +40,5 @@ class CpuReaderLinux
         const unsigned m_cpus_count;
         std::vector<CpuStats> m_measurements;
         std::vector<Jiffies> m_prev_results;
-        SystemFilesReader *const m_files_reader;
+        ISystemFilesReader *const m_files_reader;
 };

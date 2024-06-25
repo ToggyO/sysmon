@@ -13,16 +13,45 @@ void create_path_from_segments(
     result += segment3;
 }
 
-void SystemFilesReaderLinux::read_proc_stat(std::stringstream &result)
+// TODO: сделать членом класса
+int get_fd(const std::string& path)
 {
-    std::ifstream proc_stat_fs(LinuxConstants::k_proc_stat_file);
-    if (!proc_stat_fs.is_open()) { return; }
-//    check_fs_is_open_or_throw(proc_stat_fs, LinuxConstants::k_proc_stat_file);
-
-    result << proc_stat_fs.rdbuf();
-    proc_stat_fs.close();
+    int fd = open(path.c_str(), O_RDONLY);
+    if (fd == -1)
+    {
+        throw std::runtime_error("Failed to open fd: " + path);
+    }
+    return fd;
 }
 
+SystemFilesReaderLinux::SystemFilesReaderLinux()
+    : m_fds{}
+{
+    constexpr uint8_t fds_count = 5; // TODO: поправить!
+    m_fds.reserve(fds_count);
+
+    m_proc_stat_fd = get_fd(LinuxConstants::k_proc_stat_file);
+    m_fds.push_back(m_proc_stat_fd);
+
+    m_etc_passwd_fd = get_fd(LinuxConstants::k_pwd_path);
+    m_fds.push_back(m_etc_passwd_fd);
+
+    m_etc_os_release_fd = get_fd(LinuxConstants::k_os_file_path);
+    m_fds.push_back(m_etc_os_release_fd);
+
+    m_proc_uptime_fd = get_fd(LinuxConstants::k_uptime_file_path);
+    m_fds.push_back(m_proc_uptime_fd);
+
+    m_proc_meminfo_fd = get_fd(LinuxConstants::k_proc_meminfo_file_path);
+    m_fds.push_back(m_proc_meminfo_fd);
+}
+
+void SystemFilesReaderLinux::read_proc_stat(std::stringstream &result)
+{
+    read_file(m_proc_stat_fd , result);
+}
+
+// TODO: вопрос по хранению fd процессов остается открытым
 void SystemFilesReaderLinux::read_process_stat(std::stringstream &result, const size_t &process_id)
 {
     // TODO:
@@ -43,6 +72,7 @@ void SystemFilesReaderLinux::read_process_stat(std::stringstream &result, const 
     stats_fs.close();
 }
 
+// TODO: вопрос по хранению fd процессов остается открытым
 void SystemFilesReaderLinux::read_process_cmdline(std::stringstream &result, const size_t &process_id)
 {
     std::filesystem::path proc_cmd_file_path;
@@ -62,14 +92,10 @@ void SystemFilesReaderLinux::read_process_cmdline(std::stringstream &result, con
 
 void SystemFilesReaderLinux::read_process_etc_passwd(std::stringstream &result, const size_t &process_id)
 {
-    std::ifstream passwd_fs(LinuxConstants::k_pwd_path);
-    if (!passwd_fs.is_open()) { return; }
-//    check_fs_is_open_or_throw(passwd_fs, LinuxConstants::k_pwd_path);
-
-    result << passwd_fs.rdbuf();
-    passwd_fs.close();
+    read_file(m_etc_passwd_fd, result);
 }
 
+// TODO: вопрос по хранению fd процессов остается открытым
 void SystemFilesReaderLinux::read_process_status(std::stringstream &result, const size_t &process_id)
 {
     std::filesystem::path proc_cpu_file_path;
@@ -89,20 +115,34 @@ void SystemFilesReaderLinux::read_process_status(std::stringstream &result, cons
 
 void SystemFilesReaderLinux::read_etc_os_release(std::stringstream &result)
 {
-    std::ifstream os_fs(LinuxConstants::k_os_file_path);
-    if (!os_fs.is_open()) { return; }
-//    check_fs_is_open_or_throw(os_fs, LinuxConstants::k_os_file_path);
-
-    result << os_fs.rdbuf();
-    os_fs.close();
+    read_file(m_etc_os_release_fd, result);
 }
 
 void SystemFilesReaderLinux::read_proc_uptime(std::stringstream &result)
 {
-    std::ifstream uptime_fs(LinuxConstants::k_uptime_file_path);
-    if (!uptime_fs.is_open()) { return; }
-//    check_fs_is_open_or_throw(uptime_fs, LinuxConstants::k_uptime_file_path);
+    read_file(m_proc_uptime_fd, result);
+}
 
-    result << uptime_fs.rdbuf();
-    uptime_fs.close();
+void SystemFilesReaderLinux::read_proc_meminfo(std::stringstream& result)
+{
+    read_file(m_proc_meminfo_fd, result);
+}
+
+void SystemFilesReaderLinux::read_file(int fd, std::stringstream& result)
+{
+    lseek(fd, 0, SEEK_SET); // Set file position to 0
+
+    constexpr size_t buffer_size = 4096;
+    char buffer[buffer_size];
+
+    size_t bytes_read;
+    while ((bytes_read = read(fd, buffer, buffer_size)) > 0)
+    {
+        result.write(buffer, bytes_read);
+    }
+
+    if (bytes_read == -1)
+    {
+        throw std::runtime_error("Failed to read from file by fd");
+    }
 }
