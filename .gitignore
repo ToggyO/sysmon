@@ -51,4 +51,7 @@ About
 
 #Build results
 /**/build
+/**/build_debug
 /**/cmake-build-debug
+/**/CMakeLists.txt.user*
+documentation
