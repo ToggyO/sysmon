@@ -24,8 +24,8 @@ add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${METER_SOURCES})
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     find_package(Curses REQUIRED)
     include_directories(${CURSES_INCLUDE_DIRS})
-    set_property(TARGET sysmon PROPERTY CXX_STANDARD 17)
-    target_link_libraries(sysmon ${CURSES_LIBRARIES})
+    set_property(TARGET ${INSTALL_TARGET} PROPERTY CXX_STANDARD 17)
+    target_link_libraries(${INSTALL_TARGET} ${CURSES_LIBRARIES})
 
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
@@ -34,7 +34,7 @@ else()
 endif()
 
 target_include_directories(
-	sysmon
+    ${INSTALL_TARGET}
 	PRIVATE
 	${CMAKE_SOURCE_DIR}/lib
     ../include

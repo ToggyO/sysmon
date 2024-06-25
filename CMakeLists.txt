@@ -9,9 +9,6 @@ set(INSTALL_TARGET ${PROJECT_NAME} CACHE INTERNAL "")
 
 add_subdirectory(src)
 include_directories(include)
-
-enable_testing()
-
 add_subdirectory(tests)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
