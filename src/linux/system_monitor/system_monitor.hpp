@@ -13,7 +13,7 @@ class SystemMonitor
         /** @brief Creates new instance of SystemMonitor
          * @param SystemFilesReader* Pointer to instance of Linux system file reader
          */
-        SystemMonitor(SystemFilesReader *files_reader)
+       explicit SystemMonitor(SystemFilesReader *files_reader)
             : m_cpu_reader(new CpuReaderLinux(files_reader)),
             m_common_data_reader{new CommonDataReaderLinux(files_reader)},
             m_process_builder(new ProcessBuilderLinux(files_reader, m_common_data_reader))
@@ -39,10 +39,20 @@ class SystemMonitor
             collect_memory(system_info);
             collect_disks_usage(system_info);
             collect_processes_info(system_info);
+            collect_uptime(system_info);
         }
 
     private:
+        /** @brief Collects information about operating system name and populates SystemInfo with it.
+         * @param system_info - struct holds system monitoring information.
+         */
         void collect_os_name(SystemInfo &);
+
+        /** @brief Collects information about operating system up time and populates SystemInfo with it.
+         * @param system_info - struct holds system monitoring information.
+         */
+        void collect_uptime(SystemInfo &);
+
         /** @brief Collects information about system load average and populates SystemInfo with it.
          * @param system_info - struct holds system monitoring information.
          */

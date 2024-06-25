@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <filesystem>
 
 #include "system_monitor.hpp"
 

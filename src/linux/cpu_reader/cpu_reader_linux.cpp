@@ -32,8 +32,8 @@ void CpuReaderLinux::read(std::vector<CpuLoad> &cpu_loads_collection)
         const double d_idle_time =  (double)actual.get_total_idle() - previous.idle;
         const double d_total_time = d_active_time + d_idle_time;
 
-        double k = (d_active_time / d_total_time) * 100;
-        cpu_loads_collection.push_back(CpuLoad{std::to_string(i),k});
+        double percentage = (d_active_time / d_total_time);
+        cpu_loads_collection.push_back(CpuLoad{std::to_string(i),percentage});
 
         previous.active = (double)actual.get_total_active();
         previous.idle = (double)actual.get_total_idle();
