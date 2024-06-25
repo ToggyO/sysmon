@@ -1,9 +1,5 @@
 #include "system_monitor_factory.hpp"
 
-/** @brief
- *
- * @return
- */
 SystemMonitor SystemMonitorFactory::create()
 {
     if (!m_reader_ptr)
