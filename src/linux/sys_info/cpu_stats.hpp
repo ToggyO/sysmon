@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstring> // size_t
+#include <string> // size_t
+
 /** @brief Represents CPU usage stats */
 struct CpuStats
 {
@@ -23,12 +26,16 @@ struct CpuStats
     size_t guest;
     /** @brief Average CPU usage in guest_nice */
     size_t guest_nice;
+    /** @brief CPU identifier */
+    std::string cpu_id;
 
-    // TODO :add descr
-    size_t get_total_active() const
-    {
-        return user + nice + system + irq + softirq + steal + guest + guest_nice;
-    }
-    // TODO :add descr
-    size_t get_total_idle() const { return idle + iowait; }
+    /** @brief Calculates individual CPU total active time
+     * @return total active time
+    */
+    size_t get_total_active() const;
+
+    /** @brief Calculates individual CPU total idle time
+     * @return total idle time
+    */
+    size_t get_total_idle() const;
 };

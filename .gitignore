@@ -51,4 +51,10 @@ About
 
 #Build results
 /**/build
+/**/build_debug
 /**/cmake-build-debug
+/**/CMakeLists.txt.user*
+CMakeLists.txt.user
+
+# Doxygen
+documentation

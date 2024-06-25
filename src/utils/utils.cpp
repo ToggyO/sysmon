@@ -1,10 +1,10 @@
-#include <algorithm>
-#include <sstream>
-#include <stdexcept>
+#include <algorithm> // std::find_if
+#include <cmath> // std::pow, std::round
+#include <sstream> // std::stringstream
+#include <stdexcept> // std::runtime_error
 
 #include "utils.h"
 
-// TODO: check
 bool is_number(const std::string &s)
 {
     return !s.empty() && std::find_if(s.begin(),
@@ -33,4 +33,36 @@ std::string exec(std::string &command)
 
     pclose(pipe_reader);
     return ss.str();
+}
+
+// TODO: разобраться, как работает
+void elapsed_time(std::string &formatted_output, size_t seconds)
+{
+    size_t hours = seconds / 3600;
+    size_t minutes = (seconds % 3600) / 60;
+    size_t sec = seconds % 60;
+
+    std::stringstream result;
+
+    if (hours < 10)
+    {
+        result << "0";
+    }
+
+    result << hours << ':';
+
+    if (minutes < 10)
+    {
+        result << "0";
+    }
+
+    result << minutes << ':';
+
+    if (sec < 10)
+    {
+        result << "0";
+    }
+
+    result << sec;
+    formatted_output = result.str();
 }

@@ -1,18 +1,15 @@
-#include <iostream>
+#include "sysmon_headers.h"
 
-#include "sys_info/system_info.hpp"
-#include "common/system_monitor.hpp"
+volatile sig_atomic_t stop;
+void sig_handler(int signum) { stop = 1; }
 
-int main()
+// TODO: ПРОВЕРИТЬ ПРАВИЛА ПЯТИ И КОЕ ГДЕ ЗАПРЕТИТЬ КОПИРОВАНИЕ
+// TODO: НАТЫКАТЬ САНИТАЙЗЕРЫ
+int main(int argc, char **argv)
 {
-    SystemInfo system_info{};
-    SystemMonitor system_monitor{};
+    signal(SIGINT, sig_handler);
+    signal(SIGTERM, sig_handler);
 
-    system_monitor.collect(system_info);
-
-    std::cout << system_info.load_average_stats.load_average_1 << " "
-        << system_info.load_average_stats.load_average_5 << " "
-        << system_info.load_average_stats.load_average_15 << std::endl;
-
-    return 0;
+    SystemMonitorFactory factory{};
+    return factory.create().run(stop);
 }
