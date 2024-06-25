@@ -2,7 +2,7 @@ name: Documentation generation CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 jobs:
   build-docs:
