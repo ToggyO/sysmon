@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.5)
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
-set(PROJECT_NAME sysmon CACHE INTERNAL "")
+project(sysmon VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
-project(PROJECT_NAME VERSION ${PROJECT_VERSION} LANGUAGES CXX)
+set(INSTALL_TARGET ${PROJECT_NAME} CACHE INTERNAL "")
 
 add_subdirectory(src)
 include_directories(include)
