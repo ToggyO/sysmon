@@ -7,9 +7,8 @@
 #include <thread> // std::thread::hardware_concurrency
 #include <vector>
 
-#include "../../../include/sys_info/cpu_load.hpp"
+#include "sys_info/cpu_load.hpp"
 #include "../sys_info/cpu_stats.hpp"
-#include "../../common/error.h" // check_fs_is_open_or_throw
 #include "../filesystem/system_files_reader.interface.hpp"
 
 /** @brief Represents functionality to read and handle CPU load */
