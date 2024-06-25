@@ -1,20 +1,19 @@
-#include <fstream> // std::fstream
-#include <sstream> // std::istringstream
-#include <string>
+#include "memory_reader.hpp"
 
-#include "../../common/constants.hpp" // Constants::k_colon_delimiter
-#include "../../common/error.h" // check_fs_is_open_or_throw
-#include "system_monitor.hpp"
+MemoryReader::MemoryReader(const std::shared_ptr<ISystemFilesReader>& files_reader_ptr)
+    : m_files_reader_ptr{files_reader_ptr}
+{}
 
-unsigned int substr_and_stoi(const std::string &value, const size_t value_start, const size_t value_end)
+void MemoryReader::read(MemoryStats& mem_stats) const
 {
-    return std::stoi(value.substr(value_start, value_end));
-}
+    auto files_reader = m_files_reader_ptr.lock();
+    if (!files_reader)
+    {
+        throw std::runtime_error("MemoryReader: files reader is required");
+    }
 
-void SystemMonitor::collect_memory(SystemInfo &system_info)
-{
-    std::ifstream proc_meminfo(LinuxConstants::k_proc_meminfo_file_path);
-    check_fs_is_open_or_throw(proc_meminfo, LinuxConstants::k_proc_meminfo_file_path);
+    std::stringstream proc_mem_info;
+    files_reader->read_proc_meminfo(proc_mem_info);
 
     std::string line;
     std::string key;
@@ -26,7 +25,7 @@ void SystemMonitor::collect_memory(SystemInfo &system_info)
     unsigned int total_mem = 0;
     unsigned int used_mem = 0;
 
-    while (getline(proc_meminfo, line))
+    while (getline(proc_mem_info, line))
     {
         tokenizer.clear();
         tokenizer.str(line);
@@ -57,6 +56,12 @@ void SystemMonitor::collect_memory(SystemInfo &system_info)
         }
     }
 
-    system_info.memory_stats.total_memory = static_cast<double>(total_mem);
-    system_info.memory_stats.used_memory = static_cast<double>(used_mem);
+    mem_stats.total_memory = static_cast<double>(total_mem);
+    mem_stats.used_memory =  static_cast<double>(used_mem);
+}
+
+
+unsigned int MemoryReader::substr_and_stoi(const std::string &value, const size_t value_start, const size_t value_end)
+{
+    return std::stoi(value.substr(value_start, value_end));
 }

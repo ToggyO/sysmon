@@ -54,7 +54,7 @@ void NCursesPrinter::print(SystemInfo &system_info)
 void NCursesPrinter::print_system(SystemInfo &system_info)
 {
     int row = 0;
-    mvwprintw(m_system_window, ++row, 2, "OS: %s", system_info.os_name.c_str());
+    mvwprintw(m_system_window, ++row, 2, "OS: %s", system_info.get_os_name().c_str());
 
     std::string uptime;
     elapsed_time(uptime, system_info.uptime);

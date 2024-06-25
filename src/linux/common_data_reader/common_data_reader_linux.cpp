@@ -3,13 +3,20 @@
 
 #include "../linux_constants.hpp" // k_uptime_file_path
 
-CommonDataReaderLinux::CommonDataReaderLinux(SystemFilesReader *file_reader) : m_file_reader{file_reader}
+CommonDataReaderLinux::CommonDataReaderLinux(const std::shared_ptr<ISystemFilesReader>& files_reader_ptr)
+    : m_files_reader_ptr{files_reader_ptr}
 {}
 
-void CommonDataReaderLinux::set_os_name(std::string &os_name)
+std::string CommonDataReaderLinux::get_os_name()
 {
+    auto files_reader = m_files_reader_ptr.lock();
+    if (!files_reader)
+    {
+        throw std::runtime_error("CommonDataReaderLinux::get_os_name - files reader is required");
+    }
+
     std::stringstream ss;
-    m_file_reader->read_etc_os_release(ss);
+    files_reader->read_etc_os_release(ss);
 
     std::string line;
     std::string key;
@@ -25,15 +32,22 @@ void CommonDataReaderLinux::set_os_name(std::string &os_name)
         if (key != LinuxConstants::k_pretty_name_key) { continue; }
 
         std::getline(tokenizer, value);
-        os_name = value;
         break;
     }
+
+    return value;
 }
 
 size_t CommonDataReaderLinux::get_system_uptime()
 {
+    auto files_reader = m_files_reader_ptr.lock();
+    if (!files_reader)
+    {
+        throw std::runtime_error("CommonDataReaderLinux::get_system_uptime - files reader is required");
+    }
+
     std::stringstream ss;
-    m_file_reader->read_proc_uptime(ss);
+    files_reader->read_proc_uptime(ss);
 
     size_t uptime = 0;
     size_t idle_time = 0;
