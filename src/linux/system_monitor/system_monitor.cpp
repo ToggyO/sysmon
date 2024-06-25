@@ -18,7 +18,7 @@ std::string SystemMonitor::collect_os_name()
 void SystemMonitor::collect_cpu(SystemInfo &system_info)
 {
     std::vector<CpuLoad> cpu_loads_collection;
-    m_cpu_reader->read(cpu_loads_collection);
+    m_cpu_reader.read(cpu_loads_collection);
     system_info.cpu_load_collection = std::move(cpu_loads_collection);
 }
 
@@ -38,9 +38,9 @@ void SystemMonitor::collect_load(SystemInfo &system_info)
 
 void SystemMonitor::collect_memory(SystemInfo &system_info)
 {
-    MemoryStats mem_stats;
-    m_mem_reader->read(mem_stats);
-    system_info.memory_stats = std::move(mem_stats);
+    MemoryStats mem_stats {};
+    m_mem_reader.read(mem_stats);
+    system_info.memory_stats = mem_stats;
 
 }
 
@@ -48,7 +48,7 @@ void SystemMonitor::collect_processes_info(SystemInfo &system_info)
 {
     std::vector<Process> processes;
 
-    m_process_builder->build_processes(processes);
+    m_process_builder.build_processes(processes);
     std::sort(processes.begin(), processes.end(), [](const Process &p1, const Process &p2)
     {
         return p2 < p1;
