@@ -143,8 +143,15 @@ void NCursesPrinter::print_processes(SystemInfo &system_info)
     std::stringstream formatter;
     fixed(formatter);
     formatter.precision(2);
+
+    int i = 0;// TODO: remove
     for (const auto& process : system_info.processes)
     {
+        if (i == 10) // TODO: remove
+        {
+            break;
+        }
+
         formatter.str("");
         //You need to take care of the fact that the cpu utilization has already been multiplied by 100.
         // Clear the line
@@ -158,6 +165,8 @@ void NCursesPrinter::print_processes(SystemInfo &system_info)
         elapsed_time(process_uptime, process.uptime);
         mvwprintw(m_process_window, row, time_column, "%s", process_uptime.c_str());
         mvwprintw(m_process_window, row, command_column, "%s", process.command.substr(0, m_process_window->_maxx - command_column).c_str());
+
+        i++;// TODO: remove
     }
 }
 

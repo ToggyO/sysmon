@@ -17,5 +17,6 @@ public:
     SystemMonitor create();
 
 private:
+    std::shared_ptr<IFileDescriptorsCache> m_fd_cache_ptr;
     std::shared_ptr<ISystemFilesReader> m_reader_ptr;
 };

@@ -29,8 +29,29 @@ public:
     // TODO: add descr
     int run(const volatile sig_atomic_t& stop)
     {
+       struct Printer
+       {
+
+           void print(SystemInfo& s)
+           {
+//                std::cout.clear();
+//                std::cout << "\r11";
+//                int i = 0;
+//                for (const auto& p : s.processes)
+//                {
+//                    if (i == 15)
+//                    {
+//                        return;
+//                    }
+//                    std::cout << p.command << std::endl;
+//                    i++;
+//                }
+           }
+       };
+
         SystemInfo system_info{};
-        NCursesPrinter p(10);
+        NCursesPrinter p(10); // TODO: вынети в интейфейс
+    //    Printer p;
         p.print(system_info);
 
         // TODO: добавить сбор initial value по CPU
@@ -39,7 +60,7 @@ public:
             while (!stop)
             {
                 collect(system_info);
-                p.print(system_info); // TODO: поправить вывод RAM
+                p.print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!!
                 std::this_thread::sleep_for(std::chrono::milliseconds(1500)); // TODO: to settings
             }
         }

@@ -20,7 +20,7 @@ namespace LinuxConstants
 
     const static std::string k_proc_stat_filename = "stat";
 
-    const static std::string k_cmdline_filename = "/cmdline";
+    const static std::string k_cmdline_filename = "cmdline";
 
     const static std::string k_pretty_name_key = "PRETTY_NAME";
 

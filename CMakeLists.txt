@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.21)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
 project(sysmon VERSION ${PROJECT_VERSION} LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20) # Enable the C++20 standard
 
 set(INSTALL_TARGET ${PROJECT_NAME} CACHE INTERNAL "")
 

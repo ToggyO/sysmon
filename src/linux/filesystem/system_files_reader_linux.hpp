@@ -7,23 +7,16 @@
 #include <vector>
 #include <unistd.h> // lseek
 
-#include "../linux_constants.hpp" // m_source_name, k_proc_directory, k_proc_stat_filename, k_utime_index, k_stime_index, k_cutime_index, k_cstime_index, k_cmdline_filename, k_pwd_path, k_proc_status_filename, k_proc_stat_start_time_index, k_vm_size_key, k_uid_key
 #include "system_files_reader.interface.hpp"
+#include "file_descriptors_cache.interface.hpp"
+#include "../linux_constants.hpp" // m_source_name, k_proc_directory, k_proc_stat_filename, k_utime_index, k_stime_index, k_cutime_index, k_cstime_index, k_cmdline_filename, k_pwd_path, k_proc_status_filename, k_proc_stat_start_time_index, k_vm_size_key, k_uid_key
 #include "../../common/error.h" // check_fs_is_open_or_throw
 
 /** @bried Interface implementation for reading Linux system files */
 class SystemFilesReaderLinux : public ISystemFilesReader
 {
 public:
-    SystemFilesReaderLinux();
-
-    ~SystemFilesReaderLinux() override
-    {
-        for (const int& fd : m_fds)
-        {
-            close(fd);
-        }
-    }
+    explicit SystemFilesReaderLinux(const std::shared_ptr<IFileDescriptorsCache>& fd_cache_ptr);
 
     /** @brief Read data from '/proc/stat'
      * @override
@@ -77,13 +70,19 @@ public:
     virtual void read_proc_meminfo(std::stringstream &) override;
 
 private:
-    int m_proc_stat_fd;
-    int m_etc_passwd_fd;
-    int m_etc_os_release_fd;
-    int m_proc_uptime_fd;
-    int m_proc_meminfo_fd;
+    std::shared_ptr<IFileDescriptorsCache> m_fd_cache_ptr;
 
-    std::vector<int> m_fds;
+    static void read_file(int fd, std::stringstream& result);
 
-    void read_file(int fd, std::stringstream& result);
+    static void create_path_from_segments(
+            std::filesystem::path &result,
+            const std::string &root,
+            const std::string &segment2,
+            const std::string &segment3);
+
+    static int create_fd(const std::string& path);
+
+    static void check_fd_or_throw(const std::optional<int>& fd_opt, std::string_view name);
+
+    int get_fd_or_throw(const std::string& file_path) const;
 };
