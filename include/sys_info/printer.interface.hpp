@@ -1,0 +1,14 @@
+#pragma once
+
+#include "system_info.hpp"
+
+/** @brief System info printer */
+struct IPrinter
+{
+    /**
+     * @brief Prints system info.
+     *
+     * @param Struct holds system monitoring information.
+     */
+    virtual void print(const SystemInfo&) = 0;
+};

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "sys_info/printer.interface.hpp"
 #include "sys_info/system_info.hpp"
 #include "../sys_info/cpu_stats.hpp"
 #include "../cpu_reader/cpu_reader_linux.hpp"
@@ -18,12 +19,15 @@ public:
     /** @brief Creates new instance of SystemMonitor
      *
      * @param files_reader_ptr Pointer to instance of Linux system file reader
+     *
+     * @param printer Pointer to instance of system info printer.
      */
-   explicit SystemMonitor(std::shared_ptr<ISystemFilesReader>& files_reader_ptr)
+   explicit SystemMonitor(std::shared_ptr<ISystemFilesReader>& files_reader_ptr, std::shared_ptr<IPrinter>& printer_ptr)
         : m_cpu_reader(CpuReaderLinux(files_reader_ptr)),
         m_mem_reader{MemoryReader(files_reader_ptr)},
         m_common_data_reader{std::make_shared<CommonDataReaderLinux>(files_reader_ptr)},
-        m_process_builder(ProcessBuilderLinux(files_reader_ptr, m_common_data_reader))
+        m_process_builder(ProcessBuilderLinux(files_reader_ptr, m_common_data_reader)),
+        m_printer_ptr{printer_ptr}
     {}
 
     // TODO: add descr
@@ -50,9 +54,9 @@ public:
        };
 
         SystemInfo system_info{};
-        NCursesPrinter p(10); // TODO: вынети в интейфейс
+//        NCursesPrinter p(10); // TODO: вынети в интейфейс
     //    Printer p;
-        p.print(system_info);
+        m_printer_ptr.get()->print(system_info); // TODO: тут сделать  кравсиво проверку
 
         // TODO: добавить сбор initial value по CPU
         try
@@ -60,7 +64,7 @@ public:
             while (!stop)
             {
                 collect(system_info);
-                p.print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!!
+                m_printer_ptr.get()->print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!! // TODO: тут сделать  кравсиво проверку
                 std::this_thread::sleep_for(std::chrono::milliseconds(1500)); // TODO: to settings
             }
         }
@@ -127,12 +131,14 @@ private:
      */
     void collect_processes_info(SystemInfo &);
 
-    /** @brief Represents functionality for collecting common Linux specific data */
+    /** @brief Represents functionality for collecting common Linux specific data. */
     std::shared_ptr<CommonDataReaderLinux> m_common_data_reader;
-    /** @brief Represents functionality to read and handle CPU load */
+    /** @brief Represents functionality to read and handle CPU load. */
     CpuReaderLinux m_cpu_reader;
-    /** @brief Represents functionality to read and handle RAM */
+    /** @brief Represents functionality to read and handle RAM. */
     MemoryReader m_mem_reader;
-    /** @bried Represents functionality for generating descriptions of Linux processes */
+    /** @bried Represents functionality for generating descriptions of Linux processes. */
     ProcessBuilderLinux m_process_builder;
+    /** @brief Pointer to instance of system info printer. */
+    std::shared_ptr<IPrinter> m_printer_ptr;
 };

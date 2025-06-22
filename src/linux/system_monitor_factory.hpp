@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "sys_info/printer.interface.hpp"
 #include "system_monitor/system_monitor.hpp"
 #include "filesystem/system_files_reader.interface.hpp"
 #include "filesystem/system_files_reader_linux.hpp"
@@ -19,4 +20,5 @@ public:
 private:
     std::shared_ptr<IFileDescriptorsCache> m_fd_cache_ptr;
     std::shared_ptr<ISystemFilesReader> m_reader_ptr;
+    std::shared_ptr<IPrinter> m_printer_ptr;
 };
