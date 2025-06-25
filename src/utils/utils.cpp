@@ -1,4 +1,3 @@
-#include <algorithm> // std::find_if
 #include <cmath> // std::pow, std::round
 #include <sstream> // std::stringstream
 #include <stdexcept> // std::runtime_error

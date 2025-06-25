@@ -22,10 +22,32 @@ add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${METER_SOURCES})
 
 # detect system type to add OS specific libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    find_package(Curses REQUIRED)
-    include_directories(${CURSES_INCLUDE_DIRS})
-    set_property(TARGET ${INSTALL_TARGET} PROPERTY CXX_STANDARD 17)
-    target_link_libraries(${INSTALL_TARGET} ${CURSES_LIBRARIES})
+    # Ncurses
+#    find_package(Curses REQUIRED) # TODO: check or remove
+#    include_directories(${CURSES_INCLUDE_DIRS})
+    #
+
+#    find_package(ftxui REQUIRED)
+    # ftxui
+    include(FetchContent)
+
+    FetchContent_Declare(ftxui # TODO: попробовать с find_package
+        GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI
+        GIT_TAG v6.1.9  # Replace with a version, tag, or commit hash
+    )
+
+    FetchContent_MakeAvailable(ftxui)
+    #
+
+    # TODO: проверить, какие компоненты frxui можно выпилить, чтобы ускорить сборку
+    target_link_libraries(${INSTALL_TARGET}
+#        PRIVATE ${CURSES_LIBRARIES}
+        PRIVATE ftxui::screen
+        PRIVATE ftxui::dom
+        PRIVATE ftxui::component
+    )
+
+    set_property(TARGET ${INSTALL_TARGET} PROPERTY CXX_STANDARD 20)
 
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")

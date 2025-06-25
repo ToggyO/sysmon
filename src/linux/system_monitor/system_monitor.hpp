@@ -10,7 +10,7 @@
 #include "../common_data_reader/common_data_reader_linux.hpp"
 #include "../process_builder/proccess_builder_linux.hpp"
 #include "../memory_reader/memory_reader.hpp"
-#include "../printer/ncurses_printer.hpp"
+//#include "../printer/ncurses_printer.hpp" TODO: check
 
 /** @brief System monitoring information collector for Linux */
 class SystemMonitor
@@ -33,47 +33,38 @@ public:
     // TODO: add descr
     int run(const volatile sig_atomic_t& stop)
     {
-       struct Printer
-       {
-
-           void print(SystemInfo& s)
-           {
-//                std::cout.clear();
-//                std::cout << "\r11";
-//                int i = 0;
-//                for (const auto& p : s.processes)
-//                {
-//                    if (i == 15)
-//                    {
-//                        return;
-//                    }
-//                    std::cout << p.command << std::endl;
-//                    i++;
-//                }
-           }
-       };
-
         SystemInfo system_info{};
 //        NCursesPrinter p(10); // TODO: вынети в интейфейс
     //    Printer p;
-        m_printer_ptr.get()->print(system_info); // TODO: тут сделать  кравсиво проверку
+        auto printer = m_printer_ptr.lock();
+        if (!printer)
+        {
+            throw std::runtime_error("SystemMonitor: info printer is required");
+        }
+
+//        printer->print(system_info);
 
         // TODO: добавить сбор initial value по CPU
         try
         {
+            int iter = 0; // TODO: remove
             while (!stop)
             {
+                std::cout << "Stopping sysmon iteration count: " << iter << std::endl; // TODO: remove
                 collect(system_info);
-                m_printer_ptr.get()->print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!! // TODO: тут сделать  кравсиво проверку
+//                printer->print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!! // TODO: тут сделать  кравсиво проверку
                 std::this_thread::sleep_for(std::chrono::milliseconds(1500)); // TODO: to settings
+                iter++; // TODO: remove
             }
+
+            std::cout << "Stopping sysmon. Stop code: " << stop << std::endl; // TODO: remove
         }
         catch (std::exception& e)
         {
             std::cerr << "Sysmon exited with error: " << e.what() << std::endl;
             return EXIT_FAILURE;
         }
-
+        std::cout << "Sysmon successfully exited" << std::endl; // TODO: remove
         return EXIT_SUCCESS;
     }
 
@@ -140,5 +131,5 @@ private:
     /** @bried Represents functionality for generating descriptions of Linux processes. */
     ProcessBuilderLinux m_process_builder;
     /** @brief Pointer to instance of system info printer. */
-    std::shared_ptr<IPrinter> m_printer_ptr;
+    std::weak_ptr<IPrinter> m_printer_ptr;
 };
