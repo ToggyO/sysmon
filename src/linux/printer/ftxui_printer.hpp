@@ -2,6 +2,7 @@
 
 #include <atomic> // std::atomic_bool
 #include "ftxui/component/component.hpp" // ftxui::Container
+#include <ftxui/component/loop.hpp> // ftxui::Loop
 #include <ftxui/component/screen_interactive.hpp> // ftxui::ScreenInteractive
 #include <ftxui/dom/elements.hpp> // ftxui::hbox, ftxui::text, ftxui::border, ftxui::flex
 #include <iomanip> // std::setprecision
@@ -47,8 +48,9 @@ class FtxUiPrinter : public IPrinter
 {
 public:
     FtxUiPrinter() : m_screen{ScreenInteractive::TerminalOutput()}, m_initialized{false}
+//        m_loop(&m_screen, /* default initialization */ Renderer([&]() {return hbox({});}))
     {
-        std::cout << "FtxUiPrinter ctor called";
+        std::cout << "FtxUiPrinter ctor called" << std::endl;
     }
 
     ~FtxUiPrinter()
@@ -66,5 +68,6 @@ public:
 private:
     ScreenInteractive m_screen;
     std::atomic_bool m_initialized;
-    std::thread m_loop_thread;
+    std::thread m_loop_thread; // TODO: check
+//    std::unique_ptr<Loop> m_loop_ptr;
 };

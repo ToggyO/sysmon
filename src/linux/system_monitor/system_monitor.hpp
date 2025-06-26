@@ -34,37 +34,40 @@ public:
     int run(const volatile sig_atomic_t& stop)
     {
         SystemInfo system_info{};
-//        NCursesPrinter p(10); // TODO: вынети в интейфейс
-    //    Printer p;
+
         auto printer = m_printer_ptr.lock();
         if (!printer)
         {
             throw std::runtime_error("SystemMonitor: info printer is required");
         }
 
-//        printer->print(system_info);
-
         // TODO: добавить сбор initial value по CPU
+        printer->print(system_info);
+
+        // Data refreshing iteration duration
+        size_t iteration_ms = 1500; // TODO: to settings
+        // The delay between checks when to start a new data collection iteration
+        auto quant_duration = std::chrono::milliseconds(iteration_ms / 20); // TODO: возможно, 20 в настройки вынести
+        auto iteration_duration = std::chrono::milliseconds(iteration_ms);
+
         try
         {
-            int iter = 0; // TODO: remove
-            while (!stop)
+            while (!stop) // TODO: после получения SIGINT этот цикл еще в течение 1.5 секунд не знает о получени сигнала
             {
-                std::cout << "Stopping sysmon iteration count: " << iter << std::endl; // TODO: remove
-                collect(system_info);
-//                printer->print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!! // TODO: тут сделать  кравсиво проверку
-                std::this_thread::sleep_for(std::chrono::milliseconds(1500)); // TODO: to settings
-                iter++; // TODO: remove
-            }
+                auto start_time = std::chrono::high_resolution_clock::now();
 
-            std::cout << "Stopping sysmon. Stop code: " << stop << std::endl; // TODO: remove
+                collect(system_info);
+                printer->print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!! // TODO: тут сделать  кравсиво проверку
+
+                await_for_new_iteration(stop, start_time, iteration_duration, quant_duration);
+            }
         }
         catch (std::exception& e)
         {
             std::cerr << "Sysmon exited with error: " << e.what() << std::endl;
             return EXIT_FAILURE;
         }
-        std::cout << "Sysmon successfully exited" << std::endl; // TODO: remove
+
         return EXIT_SUCCESS;
     }
 
@@ -121,6 +124,23 @@ private:
      * @param system_info - struct holds system monitoring information.
      */
     void collect_processes_info(SystemInfo &);
+
+    /**
+     * @brief Allows to wait for new data collecting iteration and handles stop signal.
+     *
+     * @param stop - stop signal.
+     *
+     * @param start_time - data collecting iteration start time.
+     *
+     * @param iteration_duration - maximum data collecting iteration duration.
+     *
+     * @param quant_duration - time step with which the maximum iteration duration time is checked.
+     */
+    static void await_for_new_iteration(
+        const volatile sig_atomic_t& stop,
+        const std::chrono::time_point<std::chrono::system_clock>& start_time,
+        const std::chrono::milliseconds& iteration_duration,
+        const std::chrono::milliseconds& quant_duration);
 
     /** @brief Represents functionality for collecting common Linux specific data. */
     std::shared_ptr<CommonDataReaderLinux> m_common_data_reader;

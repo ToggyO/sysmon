@@ -11,8 +11,10 @@ void sig_stop_handler(int signum) {
 int main(int argc, char **argv)
 {
     // TODO: ЭТО ЮНИКС СИГНАЛЫ ОЛОЛО. Для других ос не пойдет. Нужно инкапсулировать
-    std::signal(SIGINT, sig_stop_handler);
-    std::signal(SIGTERM, sig_stop_handler);
+    signal(SIGINT, sig_stop_handler);
+    signal(SIGTERM, sig_stop_handler);
+    signal(SIGTSTP, sig_stop_handler);
+    signal(SIGABRT, sig_stop_handler);
 //    signal(SIGWINCH, sig_resize_handler);
 
     SystemMonitorFactory factory{};

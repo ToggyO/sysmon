@@ -156,3 +156,30 @@ void SystemMonitor::collect_disks_usage(SystemInfo &system_info)
 
 	// system_info.disk_stats
 }
+
+void SystemMonitor::await_for_new_iteration(
+    const volatile sig_atomic_t& stop,
+    const std::chrono::time_point<std::chrono::system_clock>& start_time,
+    const std::chrono::milliseconds& iteration_duration,
+    const std::chrono::milliseconds& quant_duration)
+{
+    // TODO: после получения SIGINT верхний цикл еще в течение {iteration_ms} не знает о получени сигнала + локализовать на ENG
+    // В течение {iteration_ms} времени проверяем, пришел ли сигнал на остановку приложения в процессе итерации сбора данных
+    while (true)
+    {
+        if (stop)
+        {
+            break;
+        }
+
+        auto current_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time);
+
+        if (duration >= iteration_duration)
+        {
+            break;
+        }
+
+        std::this_thread::sleep_for(quant_duration);
+    }
+}

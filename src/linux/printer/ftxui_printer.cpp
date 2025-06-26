@@ -1,5 +1,6 @@
 #include "ftxui_printer.hpp"
 
+// TODO: remove
 //void FtxUiPrinter::print(const SystemInfo& system_info)
 //{
 ////    std::cout << m_screen.ToString();
@@ -73,11 +74,11 @@ void FtxUiPrinter::print(const SystemInfo& system_info)
 //    double used_memory = convert_unit(static_cast<double>(system_info.memory_stats.used_memory), GIGABYTES, KILOBYTES);
 //    build_progress_bar(mem_bar, used_memory, total_memory, Constants::k_mem_units);
 
-    std::stringstream ss;
-    ss << system_info.memory_stats.used_memory << '/' << system_info.memory_stats.total_memory;
-
-    std::string uptime;
-    elapsed_time(uptime, system_info.uptime);
+//    std::stringstream ss;
+//    ss << system_info.memory_stats.used_memory << '/' << system_info.memory_stats.total_memory;
+//
+//    std::string uptime;
+//    elapsed_time(uptime, system_info.uptime);
 
     if (!m_initialized.load())
     {
@@ -86,50 +87,59 @@ void FtxUiPrinter::print(const SystemInfo& system_info)
         {
             auto renderer = Renderer([&]()
             {
+                std::string mem_bar;
+                double total_memory = convert_unit(static_cast<double>(system_info.memory_stats.total_memory), GIGABYTES, KILOBYTES);
+                double used_memory = convert_unit(static_cast<double>(system_info.memory_stats.used_memory), GIGABYTES, KILOBYTES);
+                build_progress_bar(mem_bar, used_memory, total_memory, Constants::k_mem_units);
+
+                std::string uptime;
+                elapsed_time(uptime, system_info.uptime);
+
                 return hbox({
                     text(system_info.get_os_name())  | border,
-                    text(ss.str()) | border | flex,
+                    text(mem_bar) | border | flex,
                     text(uptime) | border | flex,
                 });
             });
 
-//            Event::CtrlC
             this->m_initialized.store(true);
             this->m_screen.Loop(renderer);
-            std::cout << "Loop exits" << std::endl; // TODO: remove
-
-//            auto k = m_screen.ExitLoopClosure();
-//            m_screen.
-                                        return;
-            // TODO: Нужен грамотный выход из Loopa при нажатии ctrl+x< ctrl+d, ctrl+z - m_screen.ExitLoopClosure(), m_screen.Exit()
+//            std::cout << "Loop exits" << std::endl; // TODO: remove
+            std::raise(SIGABRT); // TODO: костыль, потому что обработчик сигналов ftxui скрывает поступления сигнала от OS для основного приложения
         });
         return;
     }
 
+    // Causing ftxui screen redraw
     m_screen.PostEvent(Event::Custom);
-////    m_screen.Post([&] { return system_info; });
-//
-//
-//    auto table = Table({});
-//
-//
-//
-//    auto component = Container::Vertical({renderer});
-//
-////    component->OnEvent()
-//
-//
-//
-//    component |= CatchEvent([&](const Event& event)
+
+    // TODO: remove
+//    if (!m_initialized.load())
 //    {
-//        if (event == Event::Custom)
-//        {
+//        std::cout << "Initializing FtxUIPrinter" << std::endl; // TODO: remove
+//        auto renderer = Renderer([&]()
+//         {
+//             return hbox({
+//                 text(system_info.get_os_name())  | border,
+//                 text(ss.str()) | border | flex,
+//                 text(uptime) | border | flex,
+//             });
+//         });
 //
-//            return true;
-//        }
-//        return false;
-//    });
+//        m_loop_ptr = std::make_unique<Loop>(&m_screen, renderer);
+//        this->m_initialized.store(true);
 //
-//
-//    m_screen.Loop(component);
+//        // TODO: в отдельный метод?
+//        m_loop_thread = std::thread([&]{});
+//        return;
+//    }
+
+
+//    if (!m_loop_ptr->HasQuitted())
+//    {
+//        m_loop_ptr->RunOnce();
+//    }
+
+//    m_screen.RequestAnimationFrame();
+//    m_screen.PostEvent(Event::Custom);
 }
