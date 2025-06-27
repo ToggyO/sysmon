@@ -11,4 +11,6 @@ struct IPrinter
      * @param Struct holds system monitoring information.
      */
     virtual void print(const SystemInfo&) = 0;
+
+    virtual ~IPrinter() = default;
 };
