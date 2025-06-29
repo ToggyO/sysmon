@@ -4,6 +4,7 @@
 #include <sstream> // std::stringstream
 
 // TODO: add descr
+// TODO: check
 struct UiHelpers
 {
     static void build_progress_bar(std::string &bar, double percent)
