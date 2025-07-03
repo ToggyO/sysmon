@@ -1,6 +1,6 @@
 #include "system_monitor_factory.hpp"
 #include "filesystem/file_descriptors_cache.hpp"
-#include "printer/ftxui_printer.hpp"
+#include "../printer/ftxui_printer.hpp"
 
 SystemMonitor SystemMonitorFactory::create()
 {

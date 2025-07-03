@@ -1,5 +1,19 @@
 cmake_minimum_required(VERSION 3.21)
 
+# TODO: check
+# Find clang-format executable
+find_program(CLANG_FORMAT_EXECUTABLE clang-format)
+
+if (CLANG_FORMAT_EXECUTABLE)
+    # Define a custom target for formatting
+    add_custom_target(clangformat
+            COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${SOURCE_FILES}
+            COMMENT "Formatting source files with clang-format"
+    )
+else()
+    message(WARNING "clang-format not found. Code formatting target will not be available.")
+endif()
+
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 

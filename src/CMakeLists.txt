@@ -7,6 +7,8 @@ set(COMMON_SOURCES
     "utils/utils.cpp"
 )
 
+file(GLOB PRINTER_SOURCES "printer/*.hpp" "printer/*.cpp") # TODO: запихать бы в COMMON_SOURCES
+
 # detect system type
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     file(GLOB METER_SOURCES "linux/*.cpp" "linux/*.hpp" "linux/**/*.cpp" "linux/**/*.hpp")
@@ -18,7 +20,7 @@ else()
     message(FATAL_ERROR "Unsupported OS - '${CMAKE_SYSTEM_NAME}'")
 endif()
 
-add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${METER_SOURCES})
+add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${PRINTER_SOURCES} ${METER_SOURCES})
 
 # detect system type to add OS specific libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
