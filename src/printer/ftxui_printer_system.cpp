@@ -16,5 +16,5 @@ Element FtxUiPrinter::build_system(const SystemInfo &system_info)
             color(FtxUiHelpers::CommonColors::Text::title_text),
             text(uptime) | color(FtxUiHelpers::CommonColors::Text::value_text),
         })
-    }) | flex | size(WidthOrHeight::WIDTH, EQUAL, Terminal::Size().dimx / 2);
+    }) | flex | size(WidthOrHeight::WIDTH, EQUAL, Terminal::Size().dimx / 2); // TODO: тут поиграться
 }

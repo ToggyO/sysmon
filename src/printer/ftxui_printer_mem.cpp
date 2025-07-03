@@ -27,7 +27,7 @@ Element FtxUiPrinter::build_mem(const SystemInfo& system_info)
             hbox({
                 gauge((float) percentage)
                     | gauge_color
-                    | size(WidthOrHeight::WIDTH, EQUAL, Terminal::Size().dimx / 2 - 20),
+                    | size(WidthOrHeight::WIDTH, EQUAL, Terminal::Size().dimx / 2 - 20), // TODO: тут поиграться
                 text(mem_text.str()) | gauge_color,
             }),
         })

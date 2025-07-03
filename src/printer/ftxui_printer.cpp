@@ -40,7 +40,7 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
                FtxUiHelpers::vindent(1),
                std::move(mem_box),
            }),
-           FtxUiHelpers::hindent(1),
+           FtxUiHelpers::hindent(3),
            std::move(system_box)
         });
     }
@@ -51,7 +51,7 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
             FtxUiHelpers::vindent(1),
             hbox({
                 std::move(mem_box),
-                FtxUiHelpers::hindent(4),
+                FtxUiHelpers::hindent(3),
                 std::move(system_box),
             })
         });
@@ -60,6 +60,7 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
     return hbox({
         FtxUiHelpers::hindent(2),
         vbox({
+            FtxUiHelpers::vindent(1),
             std::move(common_info_box),
             build_process(system_info)
         }),
