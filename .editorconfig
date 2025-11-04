@@ -1,0 +1,33 @@
+# top-most EditorConfig file
+root = true
+
+# C++ files
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,inl,ipp,tlh,tli}]
+charset = utf-8
+indent_style = space
+indent_size = 4
+tab_width = 4
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# C++ specific formatting options (example using Visual Studio/ReSharper properties)
+# Indentation
+cpp_indent_braces = false
+cpp_indent_case_contents_when_block = true
+cpp_indent_multi_line_relative_to = outer_parenthesis
+cpp_use_continuous_line_indent_in_method_pars = true
+
+# Braces Layout
+cpp_brace_style = end_of_line
+cpp_new_line_before_open_brace_namespace = same_line
+
+# Blank Lines
+cpp_blank_lines_before_namespace = 1
+cpp_blank_lines_after_namespace = 1
+cpp_blank_lines_before_function = 1
+cpp_blank_lines_after_function = 0
+
+# Line breaks and Wrapping
+cpp_wrap_statements = auto
+cpp_max_line_length = 120

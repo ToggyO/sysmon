@@ -4,9 +4,8 @@
 #include <sstream> // std::stringstream
 
 /** @bried Linux system file reader interface */
-class ISystemFilesReader
+struct ISystemFilesReader
 {
-public:
     // ВОПРОС: будет ли вызван деструктор наследника, если виртуальный деструктор базового класса реализован как default
     /** @bried Destroys current instance of ISystemFilesReader */
     virtual ~ISystemFilesReader() = default;

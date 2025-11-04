@@ -20,7 +20,7 @@ namespace LinuxConstants
 
     const static std::string k_proc_stat_filename = "stat";
 
-    const static std::string k_cmdline_filename = "/cmdline";
+    const static std::string k_cmdline_filename = "cmdline";
 
     const static std::string k_pretty_name_key = "PRETTY_NAME";
 
@@ -39,6 +39,8 @@ namespace LinuxConstants
     const static std::string k_buffers = "Buffers";
     const static std::string k_cached = "Cached";
     const static std::string k_sreclaimable = "SReclaimable";
+    const static std::string k_swap_total = "SwapTotal";
+    const static std::string k_swap_free = "SwapFree";
 
     const static ushort k_utime_index = 13;
 
