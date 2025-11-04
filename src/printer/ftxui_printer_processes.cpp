@@ -56,7 +56,7 @@ Element FtxUiPrinter::build_process(const SystemInfo& system_info)
 
             table_content.push_back(std::move(row));
 
-            i++; // TODO: remove
+            i++;
         }
 
         auto table = Table(std::move(table_content));

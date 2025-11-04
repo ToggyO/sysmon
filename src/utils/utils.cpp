@@ -1,7 +1,3 @@
-#include <cmath> // std::pow, std::round
-#include <sstream> // std::stringstream
-#include <stdexcept> // std::runtime_error
-
 #include "utils.h"
 
 bool is_number(const std::string &s)
