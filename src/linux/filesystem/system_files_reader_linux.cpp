@@ -1,8 +1,6 @@
 #include "system_files_reader_linux.hpp"
 
 
-#include <cstring> // TODO: remove
-
 // TODO: файловые дексрипторы надо не забывать закрывать ЛОООООЛ
 SystemFilesReaderLinux::SystemFilesReaderLinux(const std::shared_ptr<IFileDescriptorsCache>& fd_cache_ptr)
     : m_fd_cache_ptr{fd_cache_ptr}

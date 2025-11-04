@@ -15,11 +15,6 @@ void ProcessBuilderLinux::build_processes(std::vector<Process> &processes)
 
         const auto name = dir_entry.path().filename().string();
         if (!std::all_of(name.begin(), name.end(), isdigit)) { continue; }
-//
-//        if ((size_t)std::stoi(name) != 44441) // TODO: remove
-//        {
-//            continue;
-//        }
 
         Process process((size_t)std::stoi(name));
 
