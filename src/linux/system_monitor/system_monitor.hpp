@@ -10,7 +10,6 @@
 #include "../common_data_reader/common_data_reader_linux.hpp"
 #include "../process_builder/proccess_builder_linux.hpp"
 #include "../memory_reader/memory_reader.hpp"
-//#include "../printer/ncurses_printer.hpp" TODO: check
 
 /** @brief System monitoring information collector for Linux */
 class SystemMonitor
@@ -41,7 +40,6 @@ public:
             throw std::runtime_error("SystemMonitor: info printer is required");
         }
 
-        // TODO: добавить сбор initial value по CPU
         printer->print(system_info);
 
         // Data refreshing iteration duration
@@ -52,12 +50,12 @@ public:
 
         try
         {
-            while (!stop) // TODO: после получения SIGINT этот цикл еще в течение 1.5 секунд не знает о получени сигнала
+            while (!stop)
             {
                 auto start_time = std::chrono::high_resolution_clock::now();
 
                 collect(system_info);
-                printer->print(system_info); // TODO: поправить вывод RAM, Load average не печататется!!! // TODO: тут сделать  кравсиво проверку
+                printer->print(system_info);
 
                 await_for_new_iteration(stop, start_time, iteration_duration, quant_duration);
             }

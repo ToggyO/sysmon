@@ -20,7 +20,8 @@ else()
     message(FATAL_ERROR "Unsupported OS - '${CMAKE_SYSTEM_NAME}'")
 endif()
 
-add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${PRINTER_SOURCES} ${METER_SOURCES})
+add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${PRINTER_SOURCES} ${METER_SOURCES}
+)
 
 # detect system type to add OS specific libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")

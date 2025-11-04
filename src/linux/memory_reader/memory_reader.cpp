@@ -24,6 +24,8 @@ void MemoryReader::read(MemoryStats& mem_stats) const
 
     unsigned int total_mem = 0;
     unsigned int used_mem = 0;
+    unsigned int swap_total = 0;
+    unsigned int swap_free = 0;
 
     while (getline(proc_mem_info, line))
     {
@@ -50,14 +52,26 @@ void MemoryReader::read(MemoryStats& mem_stats) const
             used_mem += substr_and_stoi(value, value_start, value_end);
         }
 
-        if (key == LinuxConstants::k_buffers  || key == LinuxConstants::k_cached || key == LinuxConstants::k_sreclaimable)
+        if (key == LinuxConstants::k_buffers || key == LinuxConstants::k_cached || key == LinuxConstants::k_sreclaimable)
         {
             used_mem -= substr_and_stoi(value, value_start, value_end);
+        }
+
+        if (key == LinuxConstants::k_swap_total)
+        {
+            swap_total = substr_and_stoi(value, value_start, value_end);
+        }
+
+        if (key == LinuxConstants::k_swap_free)
+        {
+            swap_free = substr_and_stoi(value, value_start, value_end); // TODO: check
         }
     }
 
     mem_stats.total_memory = static_cast<double>(total_mem);
     mem_stats.used_memory =  static_cast<double>(used_mem);
+    mem_stats.swap_total =  static_cast<double>(swap_total);
+    mem_stats.swap_free =  static_cast<double>(swap_free);
 }
 
 

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <array> // std::array
 #include <atomic> // std::atomic_bool
 #include <cmath> // std::ceil
 #include <csignal> // std::raise, SIGABRT
 #include "ftxui/component/component.hpp" // ftxui::Container
 #include <ftxui/component/screen_interactive.hpp> // ftxui::ScreenInteractive
+#include <ftxui/component/component.hpp> // ftxui::Renderer
+#include <ftxui/dom/table.hpp> // ftxui::Table
 #include <ftxui/dom/elements.hpp> // ftxui::hbox, ftxui::text, ftxui::border, ftxui::flex
 #include <iomanip> // std::setprecision
 #include <optional> // std::optional
@@ -24,9 +27,8 @@ class FtxUiPrinter final : public IPrinter
 private:
     /** @brief Maximum CPU columns display count */
     constexpr static size_t k_max_cpu_columns = 4;
-//    constexpr static size_t k_max_cpu_columns = 4;
-//    constexpr static size_t k_max_cpu_columns = 4; TODO: check
-//    constexpr static size_t k_max_cpu_columns = 4;
+
+    static const std::array<std::string, 6> m_header_names;
 
 public:
     FtxUiPrinter() : m_screen{ScreenInteractive::Fullscreen()}, m_initialized{false}
@@ -61,4 +63,3 @@ private:
 
     std::optional<size_t> m_cpu_columns_count;
 };
-

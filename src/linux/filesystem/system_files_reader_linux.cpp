@@ -1,5 +1,9 @@
 #include "system_files_reader_linux.hpp"
 
+
+#include <cstring> // TODO: remove
+
+// TODO: файловые дексрипторы надо не забывать закрывать ЛОООООЛ
 SystemFilesReaderLinux::SystemFilesReaderLinux(const std::shared_ptr<IFileDescriptorsCache>& fd_cache_ptr)
     : m_fd_cache_ptr{fd_cache_ptr}
 {
@@ -21,53 +25,53 @@ void SystemFilesReaderLinux::read_process_stat(std::stringstream &result, const 
     // TODO:
     //    terminate called after throwing an instance of 'std::runtime_error'
     //    what():  Cannot open: /proc/32582/stat
-//    std::filesystem::path proc_cpu_file_path;
-//    create_path_from_segments(
-//            proc_cpu_file_path,
-//            LinuxConstants::k_proc_directory,
-//            std::to_string(process_id),
-//            LinuxConstants::k_proc_stat_filename);
-//
-//    std::ifstream stats_fs(proc_cpu_file_path);
-//    if (!stats_fs.is_open()) { return; }
-////    check_fs_is_open_or_throw(stats_fs, proc_cpu_file_path); TODO: check
-//
-//    result << stats_fs.rdbuf();
-//    stats_fs.close();
+   std::filesystem::path proc_cpu_file_path;
+   create_path_from_segments(
+           proc_cpu_file_path,
+           LinuxConstants::k_proc_directory,
+           std::to_string(process_id),
+           LinuxConstants::k_proc_stat_filename);
 
-    auto fd_opt = m_fd_cache_ptr->get_by_pid(process_id);
-    if (!fd_opt.has_value())
-    {
-        fd_opt = ProcessFdsSet{};
-    }
+   std::ifstream stats_fs(proc_cpu_file_path);
+   if (!stats_fs.is_open()) { return; } // TODO: как будто хуита
+//    check_fs_is_open_or_throw(stats_fs, proc_cpu_file_path); TODO: check
 
-    if (!fd_opt->proc_stat_fd.has_value())
-    {
-        std::filesystem::path proc_stat_file_path;
-        create_path_from_segments(
-                proc_stat_file_path,
-                LinuxConstants::k_proc_directory,
-                std::to_string(process_id),
-                LinuxConstants::k_proc_stat_filename);
+   result << stats_fs.rdbuf();
+   stats_fs.close();
 
-        int fd = create_fd(proc_stat_file_path);
-        if (fd == -1)
-        {
-            return;
-        }
+    // auto fd_opt = m_fd_cache_ptr->get_by_pid(process_id);
+    // if (!fd_opt.has_value())
+    // {
+    //     fd_opt = ProcessFdsSet{};
+    // }
 
-        fd_opt->proc_stat_fd = {fd};
-        m_fd_cache_ptr->save_by_pid(process_id, fd_opt.value());
-    }
+    // if (!fd_opt->proc_stat_fd.has_value())
+    // {
+    //     std::filesystem::path proc_stat_file_path;
+    //     create_path_from_segments(
+    //             proc_stat_file_path,
+    //             LinuxConstants::k_proc_directory,
+    //             std::to_string(process_id),
+    //             LinuxConstants::k_proc_stat_filename);
 
-    try
-    {
-        read_file(fd_opt->proc_stat_fd.value(), result);
-    }
-    catch (...)
-    {
-        return;
-    }
+    //     int fd = create_fd(proc_stat_file_path);
+    //     if (fd == -1)
+    //     {
+    //         return;
+    //     }
+
+    //     fd_opt->proc_stat_fd = {fd};
+    //     m_fd_cache_ptr->save_by_pid(process_id, fd_opt.value());
+    // }
+
+    // try
+    // {
+    //     read_file(fd_opt->proc_stat_fd.value(), result);
+    // }
+    // catch (...)
+    // {
+    //     return;
+    // }
 
 //    std::cout << result.str() << std::endl;
 }
@@ -75,53 +79,54 @@ void SystemFilesReaderLinux::read_process_stat(std::stringstream &result, const 
 // TODO: вопрос по хранению fd процессов остается открытым
 void SystemFilesReaderLinux::read_process_cmdline(std::stringstream &result, const size_t &process_id)
 {
-//    std::filesystem::path proc_cmd_file_path;
-//    create_path_from_segments(
-//            proc_cmd_file_path,
-//            LinuxConstants::k_proc_directory,
-//            std::to_string(process_id),
-//            LinuxConstants::k_cmdline_filename);
-//
-//    std::ifstream cmdline_fs(proc_cmd_file_path);
-//    if (!cmdline_fs.is_open()) { return; }
-////    check_fs_is_open_or_throw(cmdline_fs, proc_cmd_file_path);
-//
-//    result << cmdline_fs.rdbuf();
-//    cmdline_fs.close();
+   std::filesystem::path proc_cmd_file_path;
+   create_path_from_segments(
+           proc_cmd_file_path,
+           LinuxConstants::k_proc_directory,
+           std::to_string(process_id),
+           LinuxConstants::k_cmdline_filename);
 
-    auto fd_opt = m_fd_cache_ptr->get_by_pid(process_id);
-    if (!fd_opt.has_value())
-    {
-        fd_opt = ProcessFdsSet{};
-    }
+   std::ifstream cmdline_fs(proc_cmd_file_path);
+   if (!cmdline_fs.is_open()) { return; } // TODO: как будто хуита
+//    check_fs_is_open_or_throw(cmdline_fs, proc_cmd_file_path);
 
-    if (!fd_opt->proc_cmd_fd.has_value())
-    {
-        std::filesystem::path proc_cmd_file_path;
-        create_path_from_segments(
-                proc_cmd_file_path,
-                LinuxConstants::k_proc_directory,
-                std::to_string(process_id),
-                LinuxConstants::k_cmdline_filename);
+   result << cmdline_fs.rdbuf();
+   cmdline_fs.close();
 
-        int fd = create_fd(proc_cmd_file_path);
-        if (fd == -1)
-        {
-            return;
-        }
+    // auto fd_opt = m_fd_cache_ptr->get_by_pid(process_id);
+    // if (!fd_opt.has_value())
+    // {
+    //     fd_opt = ProcessFdsSet{};
+    // }
 
-        fd_opt->proc_cmd_fd = {fd};
-        m_fd_cache_ptr->save_by_pid(process_id, fd_opt.value());
-    }
+    // if (!fd_opt->proc_cmd_fd.has_value())
+    // {
+    //     std::filesystem::path proc_cmd_file_path;
+    //     create_path_from_segments(
+    //             proc_cmd_file_path,
+    //             LinuxConstants::k_proc_directory,
+    //             std::to_string(process_id),
+    //             LinuxConstants::k_cmdline_filename);
 
-    try
-    {
-        read_file(fd_opt->proc_cmd_fd.value(), result);
-    }
-    catch (...)
-    {
-        return;
-    }
+    //     int fd = create_fd(proc_cmd_file_path);
+    //     if (fd == -1)
+    //     {
+    //         std::cerr << "Error opening file: " << strerror(errno) << std::endl;
+    //         return;
+    //     }
+
+    //     fd_opt->proc_cmd_fd = {fd};
+    //     m_fd_cache_ptr->save_by_pid(process_id, fd_opt.value());
+    // }
+
+    // try
+    // {
+    //     read_file(fd_opt->proc_cmd_fd.value(), result);
+    // }
+    // catch (...)
+    // {
+    //     return;
+    // }
 
 //    std::cout << result.str() << std::endl; TODO: remove
 }
@@ -134,54 +139,54 @@ void SystemFilesReaderLinux::read_process_etc_passwd(std::stringstream &result, 
 // TODO: вопрос по хранению fd процессов остается открытым
 void SystemFilesReaderLinux::read_process_status(std::stringstream &result, const size_t &process_id)
 {
-//    std::filesystem::path proc_cpu_file_path;
-//    create_path_from_segments(
-//            proc_cpu_file_path,
-//            LinuxConstants::k_proc_directory,
-//            std::to_string(process_id),
-//            LinuxConstants::k_proc_status_filename);
-//
-//    std::ifstream status_fs(proc_cpu_file_path);
-//    if (!status_fs.is_open()) { return; }
-//
-//    result << status_fs.rdbuf();
-////    std::cout << result.str() << std::endl;
-//    status_fs.close();
-////    result.str("");
+   std::filesystem::path proc_cpu_file_path;
+   create_path_from_segments(
+           proc_cpu_file_path,
+           LinuxConstants::k_proc_directory,
+           std::to_string(process_id),
+           LinuxConstants::k_proc_status_filename);
 
-    auto fd_opt = m_fd_cache_ptr->get_by_pid(process_id);
-    if (!fd_opt.has_value())
-    {
-        fd_opt = ProcessFdsSet{};
-    }
+   std::ifstream status_fs(proc_cpu_file_path);
+   if (!status_fs.is_open()) { return; } // TODO: как будто хуита
 
-    if (!fd_opt->proc_status_fd.has_value())
-    {
-        std::filesystem::path proc_status_file_path;
-        create_path_from_segments(
-                proc_status_file_path,
-                LinuxConstants::k_proc_directory,
-                std::to_string(process_id),
-                LinuxConstants::k_proc_status_filename);
+   result << status_fs.rdbuf();
+//    std::cout << result.str() << std::endl;
+   status_fs.close();
+//    result.str("");
 
-        int fd = create_fd(proc_status_file_path);
-        if (fd == -1)
-        {
-            return;
-        }
+    // auto fd_opt = m_fd_cache_ptr->get_by_pid(process_id);
+    // if (!fd_opt.has_value())
+    // {
+    //     fd_opt = ProcessFdsSet{};
+    // }
 
-        fd_opt->proc_status_fd = fd;
-        m_fd_cache_ptr->save_by_pid(process_id, fd_opt.value());
-    }
+    // if (!fd_opt->proc_status_fd.has_value())
+    // {
+    //     std::filesystem::path proc_status_file_path;
+    //     create_path_from_segments(
+    //             proc_status_file_path,
+    //             LinuxConstants::k_proc_directory,
+    //             std::to_string(process_id),
+    //             LinuxConstants::k_proc_status_filename);
 
-    try
-    {
-        read_file(fd_opt->proc_status_fd.value(), result);
-    }
-    catch (...)
-    {
-        return;
-    }
+    //     int fd = create_fd(proc_status_file_path);
+    //     if (fd == -1)
+    //     {
+    //         return;
+    //     }
+
+    //     fd_opt->proc_status_fd = fd;
+    //     m_fd_cache_ptr->save_by_pid(process_id, fd_opt.value());
+    // }
+
+    // try
+    // {
+    //     read_file(fd_opt->proc_status_fd.value(), result);
+    // }
+    // catch (...)
+    // {
+    //     return;
+    // }
 }
 
 void SystemFilesReaderLinux::read_etc_os_release(std::stringstream &result)

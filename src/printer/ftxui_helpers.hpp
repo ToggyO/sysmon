@@ -20,7 +20,9 @@ struct FtxUiHelpers
 
         inline static const std::string k_os = "OS: ";
         inline static const std::string k_uptime = "Up Time: ";
+        inline static const std::string k_load_avg = "Load Average: ";
         inline static const std::string k_mem = "Mem: ";
+        inline static const std::string k_swap = "Swp: ";
     };
 
     struct CommonColors

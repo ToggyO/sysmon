@@ -1,6 +1,5 @@
 #include "ftxui_printer.hpp"
 
-// TODO: разбить на файлы для удобочитаемости?
 void FtxUiPrinter::print(SystemInfo& system_info)
 {
     if (!m_initialized.load())
@@ -12,7 +11,7 @@ void FtxUiPrinter::print(SystemInfo& system_info)
             });
             this->m_initialized.store(true);
             this->m_screen.Loop(renderer); // Blocking call
-            std::raise(SIGABRT); // TODO: костыль, потому что обработчик сигналов ftxui скрывает поступления сигнала от OS для основного приложения
+            std::raise(SIGABRT); // Send abort singal to the application manually, because Ftxui signal hanler hides signals from OS
         });
         return;
     }
@@ -30,17 +29,15 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
     auto mem_box = build_mem(system_info);
 
     Element common_info_box;
-    // TODO: может один раз посчитать, не?
-    // TODO: проверка на optional?
+
     if (m_cpu_columns_count < 3)
     {
         common_info_box = hbox({
            vbox({
                std::move(cpu_box),
-               FtxUiHelpers::vindent(1),
                std::move(mem_box),
            }),
-           FtxUiHelpers::hindent(3),
+           FtxUiHelpers::hindent(1),
            std::move(system_box)
         });
     }
@@ -48,10 +45,9 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
     {
         common_info_box = vbox({
             std::move(cpu_box),
-            FtxUiHelpers::vindent(1),
             hbox({
                 std::move(mem_box),
-                FtxUiHelpers::hindent(3),
+                FtxUiHelpers::hindent(1),
                 std::move(system_box),
             })
         });
@@ -62,7 +58,7 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
         vbox({
             FtxUiHelpers::vindent(1),
             std::move(common_info_box),
-            build_process(system_info)
+            build_process(system_info) | flex
         }),
         FtxUiHelpers::hindent(2)
     });
