@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sys_info/cpu_load.hpp"
+#include "sys_info/cpu_load.hpp" // CpuLoad
 
 namespace sys_format
 {

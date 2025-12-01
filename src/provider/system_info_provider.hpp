@@ -1,21 +1,23 @@
 #pragma once
 
-#include "../common/formatting/system_info_provider.interface.hpp"
-#include "common/formatting/cpu_info_provider.interface.hpp"
-#include "common/formatting/procceses_info_provider.interface.hpp"
-#include "sys_info/system_info.hpp"
+#include "common/formatting/cpu_info_provider.interface.hpp"       // sys_format::ICpuInfoProvider
+#include "common/formatting/procceses_info_provider.interface.hpp" // sys_format::IProcessesInfoProvider
+#include "common/formatting/system_info_provider.interface.hpp"    // sys_format::ISystemInfoProvider
+#include "sys_info/system_info.hpp"                                // SystemInfo
 
 // TODO: в импортах указать, что импортируем
 // TODO: разделить реализации на cpp/hpp или поставлять либой?
 /**
  * @copydoc sys_format::ISystemInfoProvider.
  *
- * @brief Functionality for preparing system information for display - imlementation.
+ * @brief Functionality for preparing system information for display -
+ * imlementation.
  */
 class SystemInfoProvider : public sys_format::ISystemInfoProvider
 {
 public:
-    /** @brief Creates an instance of @link SystemInfoProvider::SystemInfoProvider @endlink */
+    /** @brief Creates an instance of @link
+     * SystemInfoProvider::SystemInfoProvider @endlink */
     SystemInfoProvider(const SystemInfo&);
 
     SystemInfoProvider(const SystemInfoProvider&) = delete;
@@ -38,7 +40,8 @@ public:
     const sys_format::ICpuInfoProvider& get_cpu_info_provider() const override;
 
     /**
-     * @copydoc sys_format::IProcessesInfoProvider::get_processes_info_provider()
+     * @copydoc
+     * sys_format::IProcessesInfoProvider::get_processes_info_provider()
      *
      * @brief Returns a reference to a CPU stats formatter.
      */

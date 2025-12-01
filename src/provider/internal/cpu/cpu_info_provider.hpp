@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sys_info/system_info.hpp"
-#include <functional>
+#include "sys_info/system_info.hpp" // SystemInfo
+#include <functional>               // std::reference_wrapper
 
 #include "../../../common/formatting/cpu_info_provider.interface.hpp"
 
@@ -9,7 +9,8 @@
 class CpuInfoProviderImpl : public sys_format::ICpuInfoProvider
 {
 public:
-    /** @brief Creates new instance on @link CpuInfoProviderImpl @endlink. */
+    /** @brief Creates new instance on @link CpuInfoProviderImpl @endlink.
+     */
     explicit CpuInfoProviderImpl(SystemInfo&);
 
     CpuInfoProviderImpl(const CpuInfoProviderImpl&) = delete;
