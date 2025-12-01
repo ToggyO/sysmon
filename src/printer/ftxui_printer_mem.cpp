@@ -29,11 +29,13 @@ void build_mem_value_text(std::stringstream& ss, const double& used, const doubl
         << std::fixed << std::setprecision(2) << total << Constants::k_mem_units;
 }
 
-Element FtxUiPrinter::build_mem(const SystemInfo& system_info)
+Element FtxUiPrinter::build_mem(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
 {
+    const auto& mem_formatter = provider_ptr->get_mem_provider();
+
     // RAM bar
-    const double total_memory = convert_unit(system_info.memory_stats.total_memory, GIGABYTES, KILOBYTES);
-    const double used_memory = convert_unit(system_info.memory_stats.used_memory, GIGABYTES, KILOBYTES);
+    const double total_memory = mem_formatter.get_converted_mem_value(RAMTotalOrUsed::TOTAL, BYTE_UNITS::GIGABYTES);
+    const double used_memory = mem_formatter.get_converted_mem_value(RAMTotalOrUsed::USED, BYTE_UNITS::GIGABYTES);
     const double mem_usage_percentage = used_memory / total_memory;
 
     std::stringstream mem_text;
@@ -42,8 +44,8 @@ Element FtxUiPrinter::build_mem(const SystemInfo& system_info)
     auto mem_gauge_color = FtxUiHelpers::get_gauge_color(mem_usage_percentage * 100);
 
     // Swap bar
-    const double total_swap = convert_unit(system_info.memory_stats.swap_total, GIGABYTES, KILOBYTES);
-    const double free_swap = convert_unit(system_info.memory_stats.swap_free, GIGABYTES, KILOBYTES);
+    const double total_swap = mem_formatter.get_converted_swap_value(SwapTotalOrFree::TOTAL, BYTE_UNITS::GIGABYTES);
+    const double free_swap = mem_formatter.get_converted_swap_value(SwapTotalOrFree::FREE, BYTE_UNITS::GIGABYTES);
     const double used_swap = total_swap - free_swap;
     double swap_usage_percentage = (double)used_swap / total_swap;
 

@@ -7,8 +7,8 @@ find_program(CLANG_FORMAT_EXECUTABLE clang-format)
 if (CLANG_FORMAT_EXECUTABLE)
     # Define a custom target for formatting
     add_custom_target(clangformat
-            COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${SOURCE_FILES}
-            COMMENT "Formatting source files with clang-format"
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${SOURCE_FILES}
+        COMMENT "Formatting source files with clang-format"
     )
 else()
     message(WARNING "clang-format not found. Code formatting target will not be available.")
@@ -19,6 +19,7 @@ set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
 project(sysmon VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20) # Enable the C++20 standard
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(INSTALL_TARGET ${PROJECT_NAME} CACHE INTERNAL "")
 
@@ -34,3 +35,6 @@ set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT togushakov@gmail.com)
 include(CPack)
+
+target_include_directories(${INSTALL_TARGET} PUBLIC "${CMAKE_SOURCE_DIR}/src")
+

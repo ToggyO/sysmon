@@ -1,34 +1,39 @@
-#include "sysmon_headers.h"
+#include <cstddef>
+#include <signal.h>
+
+#include "application.hpp"
 
 volatile static sig_atomic_t stop;
 static void sig_stop_handler(int /*signum*/) { stop = 1; }
 
-// TODO: файловые дексрипторы надо убрать! Либо закрывать сразу после чтения. Храниени в памяти приводит к too many open files в Linux
+// TODO: файловые дексрипторы надо убрать! Либо закрывать сразу после чтения.
+// Храниени в памяти приводит к too many open files в Linux
 // TODO: добавить вывод htop's like Tasks
 // TODO: cannot create std::vector larger than max_size() on ctrl+z
 // TODO: clang-format + clang-tidy
 // TODO: ПРОВЕРИТЬ ПРАВИЛА ПЯТИ И КОЕ ГДЕ ЗАПРЕТИТЬ КОПИРОВАНИЕ
 // TODO: НАТЫКАТЬ САНИТАЙЗЕРЫ
 
-#include <memory>  // for shared_ptr, allocator, __shared_ptr_access
+// #include <memory> // for shared_ptr, allocator, __shared_ptr_access
 
-#include "ftxui/component/component.hpp"  // for Renderer, ResizableSplitBottom, ResizableSplitLeft, ResizableSplitRight, ResizableSplitTop
-#include "ftxui/component/component_base.hpp"      // for ComponentBase
-#include "ftxui/component/screen_interactive.hpp"  // for ScreenInteractive
-#include "ftxui/dom/elements.hpp"  // for Element, operator|, text, center, border
+// #include "ftxui/component/component.hpp" // for Renderer,
+// ResizableSplitBottom, ResizableSplitLeft, ResizableSplitRight,
+// ResizableSplitTop #include "ftxui/component/component_base.hpp"     // for
+// ComponentBase #include "ftxui/component/screen_interactive.hpp" // for
+// ScreenInteractive #include "ftxui/dom/elements.hpp" // for Element,
+// operator|, text, center, border
 
 int main(int argc, char **argv)
 {
-    // TODO: ЭТО ЮНИКС СИГНАЛЫ ОЛОЛО. Для других ос не пойдет. Нужно инкапсулировать
+    // TODO: ЭТО ЮНИКС СИГНАЛЫ ОЛОЛО. Для других ос не пойдет. Нужно
+    // инкапсулировать
     signal(SIGINT, sig_stop_handler);
     signal(SIGTERM, sig_stop_handler);
     signal(SIGTSTP, sig_stop_handler);
     signal(SIGABRT, sig_stop_handler);
 
-    SystemMonitorFactory factory{};
-    return factory.create().run(stop);
-
-
+    Application app;
+    return app.run(stop);
 
     // using namespace ftxui;
 
@@ -40,10 +45,10 @@ int main(int argc, char **argv)
     // int top_size = 10;
     // int bottom_size = 10;
 
-    
-
     // // Renderers:
-    // auto RendererInfo = [](const std::string& name, int* size, Box& dimensions) {
+    // auto RendererInfo = [](const std::string& name, int* size, Box&
+    // dimensions)
+    // {
     //     return Renderer([name, size, &dimensions] {
     //         std::stringstream ss;
     //         ss
@@ -51,7 +56,8 @@ int main(int argc, char **argv)
     //             << "x_max=" << dimensions.x_max << ", "
     //             << "y_mix=" << dimensions.y_min << ", "
     //             << "y_max=" << dimensions.y_max << ", ";
-    //         return text(name + ": " + std::to_string(*size) + ", " + ss.str()) | center | reflect(dimensions);
+    //         return text(name + ": " + std::to_string(*size) + ", " +
+    //         ss.str()) | center | reflect(dimensions);
     //     });
     // };
 
@@ -82,19 +88,17 @@ int main(int argc, char **argv)
     // container = ResizableSplitTop(top, container, &top_size);
     // container = ResizableSplitBottom(bottom, container, &bottom_size);
 
-    // auto renderer = Renderer(container, [&] { return container->Render() | border; });
+    // auto renderer = Renderer(container, [&] { return container->Render() |
+    // border; });
 
     // screen.Loop(renderer);
 
     // return 0;
 }
 
-
-
-
 // #include <stdio.h>  // for getchar
-// #include <ftxui/dom/elements.hpp>  // for Elements, gridbox, Fit, operator|, text, border, Element
-// #include <ftxui/screen/screen.hpp>  // for Screen
+// #include <ftxui/dom/elements.hpp>  // for Elements, gridbox, Fit, operator|,
+// text, border, Element #include <ftxui/screen/screen.hpp>  // for Screen
 // #include <memory>                   // for allocator, shared_ptr
 
 // #include "ftxui/dom/node.hpp"      // for Render
@@ -109,12 +113,13 @@ int main(int argc, char **argv)
 //   auto document =  //
 //       gridbox({
 //           {
-//               cell("north-west") | size(WidthOrHeight::WIDTH, EQUAL, 30) | size(WidthOrHeight::HEIGHT, EQUAL, 2) | vcenter,
-//               cell("north") | size(WidthOrHeight::WIDTH, EQUAL, 100),
-//               cell("north-east"),
+//               cell("north-west") | size(WidthOrHeight::WIDTH, EQUAL, 30) |
+//               size(WidthOrHeight::HEIGHT, EQUAL, 2) | vcenter, cell("north")
+//               | size(WidthOrHeight::WIDTH, EQUAL, 100), cell("north-east"),
 //           },
 //           {
-//               cell("center-west") | size(WidthOrHeight::HEIGHT, EQUAL, 2) | vcenter,
+//               cell("center-west") | size(WidthOrHeight::HEIGHT, EQUAL, 2) |
+//               vcenter,
 //             cell("center-north-west"),
 //               // gridbox({
 //               //     {
@@ -129,9 +134,8 @@ int main(int argc, char **argv)
 //               cell("center-eastsddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddk"),
 //           },
 //           {
-//               cell("south-west") | size(WidthOrHeight::HEIGHT, EQUAL, 2) | vcenter,
-//               cell("south"),
-//               cell("south-east"),
+//               cell("south-west") | size(WidthOrHeight::HEIGHT, EQUAL, 2) |
+//               vcenter, cell("south"), cell("south-east"),
 //           },
 //       });
 //   auto screen = Screen::Create(Dimension::Fit(document));
@@ -141,11 +145,6 @@ int main(int argc, char **argv)
 
 //   return 0;
 // }
-
-
-
-
-
 
 // #include <ftxui/dom/elements.hpp>
 // #include <ftxui/component/screen_interactive.hpp>
@@ -160,9 +159,8 @@ int main(int argc, char **argv)
 // class DynamicTable {
 // private:
 //     std::vector<std::vector<std::string>> data;
-//     std::vector<std::string> headers = {"ID", "Имя", "Статус", "Значение", "Время"};
-//     std::random_device rd;
-//     std::mt19937 gen;
+//     std::vector<std::string> headers = {"ID", "Имя", "Статус", "Значение",
+//     "Время"}; std::random_device rd; std::mt19937 gen;
 //     std::uniform_int_distribution<> value_dist;
 //     std::uniform_real_distribution<> time_dist;
 
@@ -260,7 +258,8 @@ int main(int argc, char **argv)
 //             using namespace std::chrono_literals;
 //             std::this_thread::sleep_for(2000ms);
 //             table.updateData();
-//             screen.PostEvent(Event::Custom); // Принудительное обновление экрана
+//             screen.PostEvent(Event::Custom); // Принудительное обновление
+//             экрана
 //         }
 //     });
 
@@ -272,18 +271,16 @@ int main(int argc, char **argv)
 //     return 0;
 // }
 
-
-
-
-// #include <ftxui/dom/elements.hpp>  // for color, Fit, LIGHT, align_right, bold, DOUBLE
-// #include <ftxui/dom/table.hpp>      // for Table, TableSelection
+// #include <ftxui/dom/elements.hpp>  // for color, Fit, LIGHT, align_right,
+// bold, DOUBLE #include <ftxui/dom/table.hpp>      // for Table, TableSelection
 // #include <ftxui/screen/screen.hpp>  // for Screen
 // #include <iostream>                 // for endl, cout, ostream
 // #include <string>                   // for basic_string, allocator, string
 // #include <vector>                   // for vector
 
 // #include "ftxui/dom/node.hpp"  // for Render
-// #include "ftxui/screen/color.hpp"  // for Color, Color::Blue, Color::Cyan, Color::White, ftxui
+// #include "ftxui/screen/color.hpp"  // for Color, Color::Blue, Color::Cyan,
+// Color::White, ftxui
 
 // int main() {
 //   using namespace ftxui;
@@ -312,7 +309,8 @@ int main(int argc, char **argv)
 
 //   // Add border around the first column.
 //   table.SelectColumn(0).Border(LIGHT);
-//   table.SelectColumn(0).DecorateCells(size(WidthOrHeight::WIDTH, EQUAL, 100));
+//   table.SelectColumn(0).DecorateCells(size(WidthOrHeight::WIDTH, EQUAL,
+//   100));
 
 //   // Make first row bold with a double border.
 //   table.SelectRow(0).Decorate(bold);
@@ -331,22 +329,14 @@ int main(int argc, char **argv)
 
 //   auto document = table.Render();
 //   auto screen =
-//       Screen::Create(Dimension::Fit(document, /*extend_beyond_screen=*/true));
+//       Screen::Create(Dimension::Fit(document,
+//       /*extend_beyond_screen=*/true));
 //   Render(screen, document);
 //   screen.Print();
 //   std::cout << std::endl;
 
 //   return 0;
 // }
-
-
-
-
-
-
-
-
-
 
 // #include <ftxui/component/component.hpp>
 // #include <ftxui/component/component_base.hpp>
@@ -388,7 +378,8 @@ int main(int argc, char **argv)
 //     }
 
 //     void sortData() {
-//         std::sort(data.begin(), data.end(), [this](const auto& a, const auto& b) {
+//         std::sort(data.begin(), data.end(), [this](const auto& a, const auto&
+//         b) {
 //             if (sort_column == 0 || sort_column == 2) { // Числовые колонки
 //                 double val_a = std::stod(a[sort_column]);
 //                 double val_b = std::stod(b[sort_column]);
@@ -459,7 +450,8 @@ int main(int argc, char **argv)
 //         });
 
 //         // Делаем заголовки кликабельными
-//         auto clickable_table = CatchEvent(table_component, [this](Event event) {
+//         auto clickable_table = CatchEvent(table_component, [this](Event
+//         event) {
 //             if (event.is_mouse() && event.mouse().button == Mouse::Left &&
 //                 event.mouse().motion == Mouse::Pressed) {
 

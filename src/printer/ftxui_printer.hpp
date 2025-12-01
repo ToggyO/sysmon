@@ -1,24 +1,26 @@
 #pragma once
 
-#include <array> // std::array
-#include <atomic> // std::atomic_bool
-#include <cmath> // std::ceil
-#include <csignal> // std::raise, SIGABRT
-#include "ftxui/component/component.hpp" // ftxui::Container
+#include "ftxui/component/component.hpp"          // ftxui::Container
+#include <array>                                  // std::array
+#include <atomic>                                 // std::atomic_bool
+#include <cmath>                                  // std::ceil
+#include <csignal>                                // std::raise, SIGABRT
+#include <ftxui/component/component.hpp>          // ftxui::Renderer
 #include <ftxui/component/screen_interactive.hpp> // ftxui::ScreenInteractive
-#include <ftxui/component/component.hpp> // ftxui::Renderer
-#include <ftxui/dom/table.hpp> // ftxui::Table
-#include <ftxui/dom/elements.hpp> // ftxui::hbox, ftxui::text, ftxui::border, ftxui::flex
-#include <iomanip> // std::setprecision
-#include <optional> // std::optional
+#include <ftxui/dom/elements.hpp>                 // ftxui::hbox, ftxui::text, ftxui::border, ftxui::flex
+#include <ftxui/dom/table.hpp>                    // ftxui::Table
+#include <iomanip>                                // std::setprecision
+#include <optional>                               // std::optional
 
-#include "sys_info/printer.interface.hpp" // IPrinter
-#include "ftxui_helpers.hpp" // FtxUiHelpers
-#include "../common/constants.hpp" // k_mem_units
-#include "../common/conversions.h" // GIGABYTES, KILOBYTES
-#include "../utils/utils.h" // elapsed_time
+#include "../common/constants.hpp"                                 // k_mem_units
+#include "../common/conversions.h"                                 // GIGABYTES, KILOBYTES
+#include "../common/formatting/system_info_provider.interface.hpp" // ISystemInfoProvider
+#include "../utils/utils.h"                                        // elapsed_time
+#include "ftxui_helpers.hpp"                                       // FtxUiHelpers
+#include "sys_info/printer.interface.hpp"                          // IPrinter
 
 using namespace ftxui;
+using namespace sys_format;
 
 // TODO: add descr
 // TODO: copy + move
@@ -31,8 +33,12 @@ private:
     static const std::array<std::string, 6> m_header_names;
 
 public:
-    FtxUiPrinter() : m_screen{ScreenInteractive::Fullscreen()}, m_initialized{false}
-    {}
+    FtxUiPrinter(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
+        : m_screen{ScreenInteractive::Fullscreen()},
+          m_initialized{false},
+          m_provider_ptr{provider_ptr}
+    {
+    }
 
     ~FtxUiPrinter() override
     {
@@ -49,9 +55,9 @@ private:
 
     Element build_system(const SystemInfo&);
 
-    Element build_mem(const SystemInfo&);
+    Element build_mem(const std::shared_ptr<ISystemInfoProvider>&);
 
-    Element build_cpu(const SystemInfo&);
+    Element build_cpu(const std::shared_ptr<ISystemInfoProvider>&);
 
     Element build_process(const SystemInfo&);
 
@@ -62,4 +68,6 @@ private:
     std::thread m_loop_thread;
 
     std::optional<size_t> m_cpu_columns_count;
+
+    std::weak_ptr<ISystemInfoProvider> m_provider_ptr;
 };

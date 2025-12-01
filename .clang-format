@@ -1,4 +1,13 @@
-# Defines the Chromium style for automatic reformatting.
-# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
-BasedOnStyle: Chromium
-Standard: Cpp20
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+BreakBeforeBraces: Allman
+AccessModifierOffset: -4
+IndentAccessModifiers: false
+PackConstructorInitializers: Never
+ColumnLimit: 120
+PointerAlignment: Left
+ReferenceAlignment: Left
+NamespaceIndentation: All
