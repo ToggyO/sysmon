@@ -9,6 +9,7 @@
 #include "printer/ftxui_printer.hpp"
 #include "provider/system_info_provider.hpp"
 
+// TODO: copy + move
 // TODO: add descr
 class Application
 {

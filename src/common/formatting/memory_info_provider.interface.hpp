@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../conversions.h" // BYTE_UNITS
+#include <string>
 
 namespace sys_format
 {
@@ -46,5 +47,14 @@ namespace sys_format
          */
         /** @brief . */
         virtual double get_converted_swap_value(SwapTotalOrFree swap_value_type, BYTE_UNITS to) const = 0;
+
+        /**
+         * @brief Coverts target num into string.
+         *
+         * @param target Target num.
+         *
+         * @param precision Result value precision.
+         */
+        virtual std::string to_string(const double target, size_t precision) const = 0;
     };
 } // namespace sys_format

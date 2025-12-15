@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ftxui/component/component.hpp"          // ftxui::Container
 #include <array>                                  // std::array
 #include <atomic>                                 // std::atomic_bool
 #include <cmath>                                  // std::ceil
@@ -15,7 +14,6 @@
 #include "../common/constants.hpp"                                 // k_mem_units
 #include "../common/conversions.h"                                 // GIGABYTES, KILOBYTES
 #include "../common/formatting/system_info_provider.interface.hpp" // ISystemInfoProvider
-#include "../utils/utils.h"                                        // elapsed_time
 #include "ftxui_helpers.hpp"                                       // FtxUiHelpers
 #include "sys_info/printer.interface.hpp"                          // IPrinter
 
@@ -30,7 +28,7 @@ private:
     /** @brief Maximum CPU columns display count */
     constexpr static size_t k_max_cpu_columns = 4;
 
-    static const std::array<std::string, 6> m_header_names;
+    static const std::array<std::tuple<std::string, std::optional<ftxui::Decorator>>, 6> m_header_names;
 
 public:
     FtxUiPrinter(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
@@ -59,7 +57,7 @@ private:
 
     Element build_cpu(const std::shared_ptr<ISystemInfoProvider>&);
 
-    Element build_process(const SystemInfo&);
+    Element build_process(const std::shared_ptr<ISystemInfoProvider>&);
 
     ScreenInteractive m_screen;
 

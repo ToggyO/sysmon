@@ -20,6 +20,7 @@ void FtxUiPrinter::print(SystemInfo& system_info)
     m_screen.PostEvent(Event::Custom);
 }
 
+// TODO: format boxes alignment
 Element FtxUiPrinter::build_layout(SystemInfo& system_info)
 {
     //    system_info.cpu_load_collection = std::vector<CpuLoad>(5, CpuLoad{}); // TODO: remove  - тест отображения cpu
@@ -53,7 +54,8 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
                                                     })});
     }
 
-    return hbox({FtxUiHelpers::hindent(2),
-                 vbox({FtxUiHelpers::vindent(1), std::move(common_info_box), build_process(system_info) | flex}),
-                 FtxUiHelpers::hindent(2)});
+    return hbox(
+        {FtxUiHelpers::hindent(2),
+         vbox({FtxUiHelpers::vindent(1), std::move(common_info_box), build_process(sys_info_provider_ptr) | flex}),
+         FtxUiHelpers::hindent(2)});
 }

@@ -5,8 +5,6 @@
 #include "common/formatting/system_info_provider.interface.hpp"    // sys_format::ISystemInfoProvider
 #include "sys_info/system_info.hpp"                                // SystemInfo
 
-// TODO: в импортах указать, что импортируем
-// TODO: разделить реализации на cpp/hpp или поставлять либой?
 /**
  * @copydoc sys_format::ISystemInfoProvider.
  *
@@ -15,6 +13,14 @@
  */
 class SystemInfoProvider : public sys_format::ISystemInfoProvider
 {
+private:
+    /**
+     * @brief Opaque implementation (PImpl idiom).
+     *
+     * Fully hides implementation details and reduces header coupling.
+     */
+    struct Impl;
+
 public:
     /** @brief Creates an instance of @link
      * SystemInfoProvider::SystemInfoProvider @endlink */
@@ -23,7 +29,7 @@ public:
     SystemInfoProvider(const SystemInfoProvider&) = delete;
     SystemInfoProvider(SystemInfoProvider&&) = default;
 
-    ~SystemInfoProvider() = default;
+    ~SystemInfoProvider() override;
 
     /**
      * @copydoc sys_format::ISystemInfoProvider::get_mem_info_provider()
@@ -51,14 +57,5 @@ public:
     SystemInfoProvider& operator=(SystemInfoProvider&&) noexcept = default;
 
 private:
-    /**
-     * @brief Opaque implementation (PImpl idiom).
-     *
-     * Fully hides implementation details and reduces header coupling.
-     */
-    struct Impl;
-
     std::unique_ptr<Impl> m_impl;
-
-    const SystemInfo& m_sys_info;
 };

@@ -1,5 +1,4 @@
 #include "ftxui_printer.hpp"
-#include <cstddef>
 
 namespace
 {
@@ -48,7 +47,7 @@ namespace
 
 Element FtxUiPrinter::build_cpu(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
 {
-    const auto& cpu_provider = provider_ptr->get_cpu_provider();
+    const auto& cpu_provider = provider_ptr->get_cpu_info_provider();
 
     auto cpu_count = cpu_provider.get_cpu_cores_count();
     m_cpu_columns_count = compute_cpu_columns_count(cpu_count, k_max_cpu_columns);
@@ -64,9 +63,8 @@ Element FtxUiPrinter::build_cpu(const std::shared_ptr<ISystemInfoProvider>& prov
 
     std::stringstream ss;
     uint8_t current_cpu_box_elements_count = 0;
-    uint8_t i = 0;
 
-    for (auto i = 0; i < cpu_count; ++i)
+    for (size_t i = 0; i < cpu_count; ++i)
     {
         const auto& cpu_load = cpu_provider.get_cpu_core_info(i);
 

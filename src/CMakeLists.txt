@@ -10,11 +10,13 @@ set(EXEC_SOURCES
 )
 
 # TODO: запихать бы в COMMON_SOURCES
-file(GLOB COMMON_SOURCES
+file(GLOB_RECURSE COMMON_SOURCES
     "printer/*.hpp"
     "printer/*.cpp"
     "provider/*.hpp"
     "provider/*.cpp"
+    "provider/**/*.hpp"
+    "provider/**/*.cpp"
 )
 
 # detect system type

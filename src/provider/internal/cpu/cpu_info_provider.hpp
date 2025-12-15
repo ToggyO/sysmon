@@ -1,9 +1,7 @@
 #pragma once
 
-#include "sys_info/system_info.hpp" // SystemInfo
-#include <functional>               // std::reference_wrapper
-
-#include "../../../common/formatting/cpu_info_provider.interface.hpp"
+#include "../../../common/formatting/cpu_info_provider.interface.hpp" // sys_format::ICpuInfoProvider
+#include "sys_info/system_info.hpp"                                   // SystemInfo
 
 /** @brief CPU stats provider. */
 class CpuInfoProviderImpl : public sys_format::ICpuInfoProvider
@@ -11,7 +9,7 @@ class CpuInfoProviderImpl : public sys_format::ICpuInfoProvider
 public:
     /** @brief Creates new instance on @link CpuInfoProviderImpl @endlink.
      */
-    explicit CpuInfoProviderImpl(SystemInfo&);
+    explicit CpuInfoProviderImpl(const SystemInfo*);
 
     CpuInfoProviderImpl(const CpuInfoProviderImpl&) = delete;
     CpuInfoProviderImpl(CpuInfoProviderImpl&&) noexcept = default;
@@ -33,8 +31,8 @@ public:
     virtual const CpuLoad& get_cpu_core_info(size_t index) const override;
 
     CpuInfoProviderImpl& operator=(const CpuInfoProviderImpl&) = delete;
-    CpuInfoProviderImpl& operator=(CpuInfoProviderImpl&&) noexcept;
+    CpuInfoProviderImpl& operator=(CpuInfoProviderImpl&&) noexcept = default;
 
 private:
-    std::reference_wrapper<SystemInfo> m_sys_info_ref;
+    const SystemInfo* m_sys_info_ptr;
 };

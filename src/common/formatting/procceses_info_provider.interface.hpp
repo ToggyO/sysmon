@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../conversions.h" // BYTE_UNITS
+#include <memory>           // std::unique_ptr
+#include <string>           // std::string
 
 namespace sys_format
 {
@@ -11,11 +13,11 @@ namespace sys_format
         virtual ~IProcessInfo() = default;
 
         /**
-         * @brief Returns the process identifier (PID).
+         * @brief Returns the process stringified identifier (PID).
          *
          * @return Process ID as an unsigned integer.
          */
-        virtual size_t get_pid() const = 0;
+        virtual std::string get_pid_string() const = 0;
 
         /**
          * @brief Returns the user name that owns the process.
@@ -29,19 +31,22 @@ namespace sys_format
         virtual std::string get_user() const = 0;
 
         /**
-         * @brief Converts the process memory usage into the requested unit.
+         * @brief Converts the process memory usage into the requested unit and stringifies it.
          *
          * @param to Target memory units (bytes, KB, MB, etc.).
+         *
+         * @param precision Result value precision.
+         *
          * @return Memory usage expressed in the requested unit.
          */
-        virtual double get_converted_mem_usage_value(BYTE_UNITS to) const = 0;
+        virtual std::string get_converted_mem_usage_value(BYTE_UNITS to, size_t precision) const = 0;
 
         /**
-         * @brief Returns CPU usage percentage.
+         * @brief Returns CPU usage percentage and stringifies it.
          *
-         * @return CPU usage percentage value.
+         * @return CPU usage percentage string value.
          */
-        virtual double get_cpu_usage_percent(bool round_value) const = 0;
+        virtual std::string get_cpu_usage_percent(size_t precision) const = 0;
 
         /**
          * @brief Returns the process uptime in a formatted human-readable form.
@@ -53,14 +58,14 @@ namespace sys_format
         virtual std::string get_uptime() const = 0;
 
         /**
-         * @brief Returns the full command used to launch the process.
+         * @brief Returns a slice from command used to launch the process.
          *
          * The returned value typically includes the executable name and
          * its command-line arguments, formatted into a single string.
          *
          * @return A formatted process command string.
          */
-        virtual std::string get_formatted_command() const = 0;
+        virtual std::string get_command_slice(size_t, size_t) const = 0;
     };
 
     /**
@@ -75,7 +80,7 @@ namespace sys_format
      * @code
      * auto it = provider.create_iterator();
      * while (it->has_next()) {
-     *     IProcessInfo info = it->next();
+     *     std::unique_ptr<IProcessInfo> info_ptr = it->next();
      *     // process info...
      * }
      * @endcode
@@ -89,7 +94,7 @@ namespace sys_format
         virtual bool has_next() const = 0;
 
         /** @brief Returns the next element in the iteration. */
-        virtual IProcessInfo next() = 0;
+        virtual std::unique_ptr<IProcessInfo> next() = 0;
     };
 
     /** @brief System processes info provider. */
