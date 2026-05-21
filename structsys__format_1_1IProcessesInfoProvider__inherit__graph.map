@@ -1,0 +1,4 @@
+<map id="sys_format::IProcessesInfoProvider" name="sys_format::IProcessesInfoProvider">
+<area shape="rect" id="node1" title="System processes info provider." alt="" coords="5,5,185,47"/>
+<area shape="rect" id="node2" href="$classProcessesInfoProviderImpl.html" title="System processes info provider." alt="" coords="6,95,185,121"/>
+</map>

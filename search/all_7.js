@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['icpuinfoprovider_43',['ICpuInfoProvider',['../structsys__format_1_1ICpuInfoProvider.html',1,'sys_format']]],
+  ['idle_44',['idle',['../structCpuStats.html#a94cbe791ed94e4051da26217f1933fbf',1,'CpuStats']]],
+  ['ifiledescriptorscache_45',['IFileDescriptorsCache',['../structIFileDescriptorsCache.html',1,'']]],
+  ['ifiledescriptorscachecleaner_46',['IFileDescriptorsCacheCleaner',['../structIFileDescriptorsCacheCleaner.html',1,'']]],
+  ['imemoryinfoprovider_47',['IMemoryInfoProvider',['../structsys__format_1_1IMemoryInfoProvider.html',1,'sys_format']]],
+  ['impl_48',['Impl',['../structSystemInfoProvider_1_1Impl.html',1,'SystemInfoProvider']]],
+  ['importancelevel_49',['ImportanceLevel',['../structFtxUiHelpers_1_1CommonColors_1_1ImportanceLevel.html',1,'FtxUiHelpers::CommonColors']]],
+  ['io_5fdevice_50',['io_device',['../structio__device.html',1,'']]],
+  ['io_5fstats_51',['io_stats',['../structio__stats.html',1,'']]],
+  ['iowait_52',['iowait',['../structCpuStats.html#a0fecd5c63fabb66719e55a49bb2bab9a',1,'CpuStats']]],
+  ['iprinter_53',['IPrinter',['../structIPrinter.html',1,'']]],
+  ['iprocessesinfoprovider_54',['IProcessesInfoProvider',['../structsys__format_1_1IProcessesInfoProvider.html',1,'sys_format']]],
+  ['iprocessinfo_55',['IProcessInfo',['../structsys__format_1_1IProcessInfo.html',1,'sys_format']]],
+  ['iprocessinfoiterator_56',['IProcessInfoIterator',['../structsys__format_1_1IProcessInfoIterator.html',1,'sys_format']]],
+  ['irq_57',['irq',['../structCpuStats.html#ab6fbf6d5938af315e4d278568de5b83e',1,'CpuStats']]],
+  ['isystemfilesreader_58',['ISystemFilesReader',['../structISystemFilesReader.html',1,'']]],
+  ['isysteminfoprovider_59',['ISystemInfoProvider',['../structsys__format_1_1ISystemInfoProvider.html',1,'sys_format']]]
+];

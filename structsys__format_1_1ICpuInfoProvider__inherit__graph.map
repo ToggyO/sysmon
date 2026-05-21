@@ -1,0 +1,4 @@
+<map id="sys_format::ICpuInfoProvider" name="sys_format::ICpuInfoProvider">
+<area shape="rect" id="node1" title="CPU stats provider." alt="" coords="5,5,195,32"/>
+<area shape="rect" id="node2" href="$classCpuInfoProviderImpl.html" title="CPU stats provider." alt="" coords="30,80,170,107"/>
+</map>

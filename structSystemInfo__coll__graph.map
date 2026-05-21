@@ -1,0 +1,5 @@
+<map id="SystemInfo" name="SystemInfo">
+<area shape="rect" id="node1" title="Struct holds system monitoring information." alt="" coords="80,95,168,121"/>
+<area shape="rect" id="node2" href="$structMemoryStats.html" title="Represents system RAM stats." alt="" coords="5,5,104,32"/>
+<area shape="rect" id="node3" href="$structLoadAverageStats.html" title="Represents load average stats." alt="" coords="128,5,259,32"/>
+</map>

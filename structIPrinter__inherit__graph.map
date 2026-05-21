@@ -1,0 +1,4 @@
+<map id="IPrinter" name="IPrinter">
+<area shape="rect" id="node1" title="System info printer." alt="" coords="19,5,83,32"/>
+<area shape="rect" id="node2" href="$classFtxUiPrinter.html" title="FTXUI&#45;based terminal printer for system monitoring data." alt="" coords="5,80,96,107"/>
+</map>

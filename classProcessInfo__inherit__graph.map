@@ -1,0 +1,4 @@
+<map id="ProcessInfo" name="ProcessInfo">
+<area shape="rect" id="node1" title="Provides access to system process information." alt="" coords="43,80,135,107"/>
+<area shape="rect" id="node2" href="$structsys__format_1_1IProcessInfo.html" title="Provides access to system process information." alt="" coords="5,5,172,32"/>
+</map>

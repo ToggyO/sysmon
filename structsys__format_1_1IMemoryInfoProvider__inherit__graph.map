@@ -1,0 +1,4 @@
+<map id="sys_format::IMemoryInfoProvider" name="sys_format::IMemoryInfoProvider">
+<area shape="rect" id="node1" title="RAM stats provider." alt="" coords="5,5,217,32"/>
+<area shape="rect" id="node2" href="$classMemoryInfoProviderImpl.html" title="RAM stats provider." alt="" coords="30,80,193,107"/>
+</map>
