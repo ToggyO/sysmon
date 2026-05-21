@@ -1,18 +1,29 @@
 #include "ftxui_printer.hpp"
+#include "common/formatting/system_info_provider.interface.hpp"
+#include <memory>
+
+FtxUiPrinter::FtxUiPrinter(std::unique_ptr<ISystemInfoProvider> provider_ptr)
+    : m_screen{ScreenInteractive::Fullscreen()},
+      m_initialized{false},
+      m_provider_ptr{std::move(provider_ptr)}
+{
+}
+
+FtxUiPrinter::~FtxUiPrinter() { stop_thread(); }
 
 void FtxUiPrinter::print(SystemInfo& system_info)
 {
     if (!m_initialized.load())
     {
-        m_loop_thread = std::thread([&]
-        {
-            const auto renderer = Renderer([&] {
-                return build_layout(system_info);
+        m_loop_thread = std::thread(
+            [&]
+            {
+                const auto renderer = Renderer([&] { return build_layout(system_info); });
+                this->m_initialized.store(true);
+                this->m_screen.Loop(renderer); // Blocking call
+                std::raise(SIGABRT); // Send abort singal to the application manually, because Ftxui signal hanler hides
+                                     // signals from OS
             });
-            this->m_initialized.store(true);
-            this->m_screen.Loop(renderer); // Blocking call
-            std::raise(SIGABRT); // Send abort singal to the application manually, because Ftxui signal hanler hides signals from OS
-        });
         return;
     }
 
@@ -20,25 +31,26 @@ void FtxUiPrinter::print(SystemInfo& system_info)
     m_screen.PostEvent(Event::Custom);
 }
 
+// TODO: format boxes alignment
 Element FtxUiPrinter::build_layout(SystemInfo& system_info)
 {
-//    system_info.cpu_load_collection = std::vector<CpuLoad>(5, CpuLoad{}); // TODO: remove  - тест отображения cpu
+    //    system_info.cpu_load_collection = std::vector<CpuLoad>(5, CpuLoad{}); // TODO: remove  - тест отображения cpu
 
-    auto cpu_box = build_cpu(system_info);
+    auto cpu_box = build_cpu();
     auto system_box = build_system(system_info);
-    auto mem_box = build_mem(system_info);
+    auto mem_box = build_mem();
 
     Element common_info_box;
 
     if (m_cpu_columns_count < 3)
     {
         common_info_box = hbox({
-           vbox({
-               std::move(cpu_box),
-               std::move(mem_box),
-           }),
-           FtxUiHelpers::hindent(1),
-           std::move(system_box)
+            vbox({
+                std::move(cpu_box),
+                std::move(mem_box),
+            }),
+            FtxUiHelpers::hindent(1),
+            std::move(system_box)
         });
     }
     else
@@ -53,13 +65,25 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
         });
     }
 
-    return hbox({
-        FtxUiHelpers::hindent(2),
-        vbox({
-            FtxUiHelpers::vindent(1),
-            std::move(common_info_box),
-            build_process(system_info) | flex
-        }),
-        FtxUiHelpers::hindent(2)
-    });
+    return hbox(
+        {
+            FtxUiHelpers::hindent(2),
+            vbox({
+                FtxUiHelpers::vindent(1),
+                std::move(common_info_box),
+                build_process() | flex
+            }),
+         FtxUiHelpers::hindent(2)});
+}
+
+void FtxUiPrinter::stop_thread()
+{
+    if (m_initialized.load())
+    {
+        if (m_loop_thread.joinable())
+        {
+            m_loop_thread.join();
+        }
+        m_initialized.store(false);
+    }
 }

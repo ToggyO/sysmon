@@ -1,13 +1,23 @@
 cmake_minimum_required(VERSION 3.5)
 
 # set common source files
-set(COMMON_SOURCES
+set(EXEC_SOURCES
     "main.cpp"
     "common/error.cpp"
     "utils/utils.cpp"
+    "application.cpp"
+    "application.hpp"
 )
 
-file(GLOB PRINTER_SOURCES "printer/*.hpp" "printer/*.cpp") # TODO: запихать бы в COMMON_SOURCES
+# TODO: запихать бы в COMMON_SOURCES
+file(GLOB_RECURSE COMMON_SOURCES
+    "printer/*.hpp"
+    "printer/*.cpp"
+    "provider/*.hpp"
+    "provider/*.cpp"
+    "provider/**/*.hpp"
+    "provider/**/*.cpp"
+)
 
 # detect system type
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -20,8 +30,7 @@ else()
     message(FATAL_ERROR "Unsupported OS - '${CMAKE_SYSTEM_NAME}'")
 endif()
 
-add_executable(${INSTALL_TARGET} ${COMMON_SOURCES} ${PRINTER_SOURCES} ${METER_SOURCES}
-)
+add_executable(${INSTALL_TARGET} ${EXEC_SOURCES} ${COMMON_SOURCES} ${METER_SOURCES})
 
 # detect system type to add OS specific libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -64,3 +73,7 @@ target_include_directories(
 	${CMAKE_SOURCE_DIR}/lib
     ../include
 )
+
+message(STATUS ${CMAKE_SOURCE_DIR})
+message(STATUS ${INSTALL_TARGET})
+
