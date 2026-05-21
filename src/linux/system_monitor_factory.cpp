@@ -1,10 +1,9 @@
 #include "system_monitor_factory.hpp"
+#include "filesystem/file_descriptors_cache.hpp"
 
-SystemMonitor SystemMonitorFactory::create()
+std::unique_ptr<SystemMonitor> SystemMonitorFactory::create()
 {
-    if (!m_reader_ptr)
-    {
-        m_reader_ptr = std::make_shared<SystemFilesReaderLinux>();
-    }
-    return SystemMonitor(m_reader_ptr);
+    auto fd_cache_ptr = std::make_shared<FileDescriptorsCache>();
+    auto reader_ptr = std::make_shared<SystemFilesReaderLinux>(std::move(fd_cache_ptr));
+    return std::make_unique<SystemMonitor>(std::move(reader_ptr));
 }

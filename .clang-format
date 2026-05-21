@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+BreakBeforeBraces: Allman
+AccessModifierOffset: -4
+IndentAccessModifiers: false
+PackConstructorInitializers: Never
+ColumnLimit: 120
+PointerAlignment: Left
+ReferenceAlignment: Left
+NamespaceIndentation: All

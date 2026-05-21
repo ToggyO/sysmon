@@ -5,6 +5,7 @@
 #include <filesystem> // std::filesystem::directory_iterator
 #include <sstream> // std::stringstream
 #include <vector>
+#include <unistd.h>
 
 #include "sys_info/process.hpp"
 #include "../filesystem/system_files_reader.interface.hpp"
