@@ -30,9 +30,9 @@ namespace
     }
 }; // namespace
 
-Element FtxUiPrinter::build_mem(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
+Element FtxUiPrinter::build_mem()
 {
-    const auto& mem_provider = provider_ptr->get_mem_info_provider();
+    const auto& mem_provider = m_provider_ptr->get_mem_info_provider();
 
     // RAM bar
     const double total_memory = mem_provider.get_converted_mem_value(RAMTotalOrUsed::TOTAL, BYTE_UNITS::GIGABYTES);

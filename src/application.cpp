@@ -2,9 +2,8 @@
 
 Application::Application()
     : m_system_info{},
-      m_provider_ptr{std::make_shared<SystemInfoProvider>(m_system_info)},
       m_collector_ptr{SystemMonitorFactory{}.create()},
-      m_printer_ptr{std::make_unique<FtxUiPrinter>(m_provider_ptr)}
+      m_printer_ptr{std::make_unique<FtxUiPrinter>(std::make_unique<SystemInfoProvider>(m_system_info))}
 {
 }
 

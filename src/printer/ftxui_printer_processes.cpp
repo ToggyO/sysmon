@@ -22,9 +22,9 @@ const std::array<std::tuple<std::string, std::optional<ftxui::Decorator>>, 6> Ft
     std::make_tuple("CPU[%]", center),    std::make_tuple("RAM[MB]", align_right),
     std::make_tuple("TIME+", center),     std::make_tuple("COMMAND", std::nullopt)};
 
-Element FtxUiPrinter::build_process(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
+Element FtxUiPrinter::build_process()
 {
-    const auto& processes_info_provider = provider_ptr->get_processes_info_provider();
+    const auto& processes_info_provider = m_provider_ptr->get_processes_info_provider();
 
     auto table_renderer = Renderer(
         [&]

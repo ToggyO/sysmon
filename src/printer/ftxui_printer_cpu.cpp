@@ -45,17 +45,16 @@ namespace
     }
 } // namespace
 
-Element FtxUiPrinter::build_cpu(const std::shared_ptr<ISystemInfoProvider>& provider_ptr)
+Element FtxUiPrinter::build_cpu()
 {
-    const auto& cpu_provider = provider_ptr->get_cpu_info_provider();
+    const auto& cpu_provider = m_provider_ptr->get_cpu_info_provider();
 
     auto cpu_count = cpu_provider.get_cpu_cores_count();
     m_cpu_columns_count = compute_cpu_columns_count(cpu_count, k_max_cpu_columns);
 
     auto max_cpu_bars_per_column = get_max_cpu_bars_per_column(cpu_count, m_cpu_columns_count.value());
 
-    // Reserving space for indentation elements: columns count + 2 indents * colmns count - (ultra-left indent +
-    // ultra-right indent)
+    // Reserving space for indentation elements: columns count + 2 indents * colmns count - (ultra-left indent + ultra-right indent)
     Elements elements;
     elements.reserve(m_cpu_columns_count.value() + 2 * m_cpu_columns_count.value() - 2);
 

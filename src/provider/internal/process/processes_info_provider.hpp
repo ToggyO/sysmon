@@ -5,13 +5,17 @@
 #include "sys_info/system_info.hpp" // SystemInfo
 #include <string>
 
-// TODO: copy + move
 /** @brief Provides access to system process information. */
 class ProcessInfo : public sys_format::IProcessInfo
 {
 public:
     /** @brief Creates new instance of @link ProcessInfo::ProcessInfo @endlink. */
     explicit ProcessInfo(const Process&);
+
+    ProcessInfo(const ProcessInfo&) = delete;
+    ProcessInfo(ProcessInfo&&) = default;
+
+    ~ProcessInfo() override = default;
 
     /**
      * @copydoc sys_format::IProcessInfo::get_pid()
@@ -80,8 +84,11 @@ public:
      */
     virtual std::string get_command_slice(size_t, size_t) const override;
 
+    ProcessInfo& operator=(const ProcessInfo&) = delete;
+    ProcessInfo& operator=(ProcessInfo&&) = default;
+
 private:
-    const Process& m_process;
+    const Process* m_process;
 };
 
 /** @brief Iterator for traversing system process information entries. */
