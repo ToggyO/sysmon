@@ -36,12 +36,6 @@ Element FtxUiPrinter::build_layout(SystemInfo& system_info)
 {
     //    system_info.cpu_load_collection = std::vector<CpuLoad>(5, CpuLoad{}); // TODO: remove  - тест отображения cpu
 
-    // const auto sys_info_provider_ptr = m_provider_ptr.lock(); // TODO:: check
-    // if (!sys_info_provider_ptr)
-    // {
-    //     throw std::runtime_error("FtxUiPrinter: system info formatter is required");
-    // }
-
     auto cpu_box = build_cpu();
     auto system_box = build_system(system_info);
     auto mem_box = build_mem();

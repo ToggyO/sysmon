@@ -42,9 +42,8 @@ void Application::await_for_new_iteration(const volatile sig_atomic_t& stop,
                                           const std::chrono::milliseconds& iteration_duration,
                                           const std::chrono::milliseconds& quant_duration)
 {
-    // TODO: после получения SIGINT верхний цикл еще в течение {iteration_ms} не знает о получени сигнала + локализовать
-    // на ENG В течение {iteration_ms} времени проверяем, пришел ли сигнал на остановку приложения в процессе итерации
-    // сбора данных
+    // Within {iteration_ms} time, we check whether a signal has been received
+    // to stop the application during the data collection iteration.
     while (true)
     {
         if (stop)
